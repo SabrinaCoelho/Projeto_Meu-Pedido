@@ -57,7 +57,6 @@ const estilos = {
 }
 
 export const Tipografia = ({variante, componente, children}) => {
-    console.log(variante, componente)
     const tag = componentes[componente]
     const ComponenteUtilizado = styled[tag]`${estilos[variante]}`
     return(
