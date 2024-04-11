@@ -4,8 +4,11 @@ import { Col, Row } from "react-grid-system"
 import { Botao } from "../../componentes/Botao/Botao"
 import { Link } from "react-router-dom"
 import { useCadastroUsuarioContext } from "../../contexto/CadastroUsuario"
+import { useLocation } from 'react-router-dom';
 
 export const CadastroUsuario = () => {
+    const {pathname} = useLocation()
+    console.log(pathname)
 
     const { 
         usuario, 
@@ -20,15 +23,19 @@ export const CadastroUsuario = () => {
         setInformacoes,
         submeterUsuario
     } = useCadastroUsuarioContext()
-
+    console.log(usuario)
     const finalizarCadastro = (evento) => {
+        evento.preventDefault();
+        submeterUsuario()
+    }
+    const atualizarCadastro = (evento) => {
         evento.preventDefault();
         submeterUsuario()
     }
 
     return (
         <form onSubmit={finalizarCadastro}>
-            {usuario.tipo == 1 ? 
+            {usuario.tipo == 1 ||  usuario.tipo == '1'? 
                 (
                 <Row>
                     <Col>
@@ -120,7 +127,7 @@ export const CadastroUsuario = () => {
                     </Col>
                 </Row>) : null
             }
-            {usuario.tipo == 2 ? 
+            {usuario.tipo == 2 || usuario.tipo == '2' ? 
                 (
                 <>
                     <Row>
@@ -164,7 +171,7 @@ export const CadastroUsuario = () => {
                     
                 </>) : null
             }
-            {usuario.tipo == 3 ? 
+            {usuario.tipo == 3 || usuario.tipo == '3' ? 
                 (
                 <>
                     <Row>
@@ -208,24 +215,42 @@ export const CadastroUsuario = () => {
                     
                 </>) : null
             }
-            <Row>
-                <Col lg={6} md={6} sm={6}>
-                    <Link to="..">
-                        <Botao variante="secundaria">
-                            Anterior
-                        </Botao>
-                    </Link>
-                </Col>
-                <Col lg={6} md={6} sm={6}>
-                    <div style={{ textAlign: 'right' }}>
-                        {/* <Link to='/cadastro/concluido'> */}
-                        <Botao>
-                            Próxima
-                        </Botao>
-                        {/* </Link> */}
-                    </div>
-                </Col>
-            </Row>
-        </form>
+            {
+                pathname.includes("cadastro/dados-usuario") ?
+                (
+                    <Row>
+                        <Col lg={6} md={6} sm={6}>
+                            <Link to="..">
+                                <Botao variante="secundaria">
+                                    Anterior
+                                </Botao>
+                            </Link>
+                        </Col>
+                        <Col lg={6} md={6} sm={6}>
+                            <div style={{ textAlign: 'right' }}>
+                                {/* <Link to='/cadastro/concluido'> */}
+                                <Botao>
+                                    Próxima
+                                </Botao>
+                                {/* </Link> */}
+                            </div>
+                        </Col>
+                    </Row>
+                ):(
+                    <Row>
+                        <Col lg={6} md={6} sm={6}>
+                            <div style={{ textAlign: 'right' }}>
+                                {/* <Link to='/cadastro/concluido'> */}
+                                <Botao onClick={atualizarCadastro}>
+                                    Atualizar cadastro
+                                </Botao>
+                                {/* </Link> */}
+                            </div>
+                        </Col>
+                    </Row>
+                )
+            }
+        </form>  
+        
     )
 }

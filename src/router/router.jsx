@@ -6,8 +6,29 @@ import { Login } from "../paginas/Login/Login";
 import { ComandaDigital } from "../paginas/ComandaDigital/ComandaDigital";
 import { SelecaoTipoUsuario } from "../paginas/CadastroUsuario/SelecaoTipoUsuario";
 import { CadastroUsuario } from "../paginas/CadastroUsuario/CadastroUsuario";
+import { Tipografia } from "../componentes/Tipografia/Tipografia";
+import { Atendimento } from "../paginas/InicioAtendimento/InicioAtendimento";
 
 export const router = createBrowserRouter([
+    
+    {
+        path: "perfil",
+        element: <LayoutBasePerfil/>,
+        children:[
+            {
+                path: "",
+                element: <Tipografia variante="h4" componente="h1">O que deseja fazer?</Tipografia>
+            },
+            {
+                path: "atualizar-dados",
+                element: <CadastroUsuario/>
+            },
+            {
+                path: "iniciar-atendimento",
+                element: <Atendimento/>
+            },
+        ]
+    },
     {
         path: "/",
         element: <LayoutBase/>,
@@ -36,16 +57,6 @@ export const router = createBrowserRouter([
                         element: <CadastroUsuario/>
                     },
                 ] 
-            },
-            {
-                path: "perfil",
-                element: <LayoutBasePerfil/>,
-                children:[
-                    {
-                        path: "atualizar-dados",
-                        element: <h1>KIRYU-CHAN</h1>
-                    }
-                ]
             }
         ]
     }

@@ -1,5 +1,10 @@
 import styled from '@emotion/styled'
 import { Outlet } from "react-router-dom";
+import { Col, Container, Row } from 'react-grid-system';
+import { Cabecalho } from '../componentes/Cabecalho/Cabecalho';
+import { Tipografia } from '../componentes/Tipografia/Tipografia';
+import { Link } from '../componentes/Link/Link';
+import { Link as RouterLink } from 'react-router-dom'; 
 
 const SideMenu = styled.div`
     height: 100%;
@@ -37,7 +42,20 @@ export const LayoutBasePerfil = () => {
                 }
             </SideMenu>
             <Conteudo>
-                <Outlet/>
+                <Cabecalho>
+                    <Container>
+                        <Row align="right">
+                            <Col style={{ textAlign: 'right' }}>
+                                <Link>
+                                    Logout
+                                </Link>
+                            </Col>
+                        </Row>
+                    </Container>
+                </Cabecalho>
+                <Container fluid style={{minHeight: "80vh"}}>
+                    <Outlet/>
+                </Container>
             </Conteudo>
         </>
     )

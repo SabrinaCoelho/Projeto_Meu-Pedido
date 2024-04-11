@@ -2,14 +2,14 @@ import { Estilos } from "./componentes/EstilosGlobais/Estilos"
 import { ProvedorTema } from "./componentes/ProvedorTema/ProvedorTema"
 import { RouterProvider } from "react-router-dom/dist";
 import { router } from "./router/router";
-import Button from "@mui/icons-material";
-
+import { Outlet } from "react-router-dom";
 
 function App() {
   return (
     <ProvedorTema>
       <Estilos/>
       <RouterProvider router={router}/>
+      <Outlet/>
     </ProvedorTema>
   );
 }

@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 
 const LoginInicial = {
     email: '',
-    senha: ''
+    senha: '',
+    tipo: '1'
 }
 
 export const LoginContext = createContext({
@@ -11,6 +12,7 @@ export const LoginContext = createContext({
     erros: {},
     setEmail: () => null,
     setSenha: () => null,
+    setTipo: () => null
 })
 
 export const useLoginContext = () => {
@@ -40,6 +42,14 @@ export const LoginProvider = ({ children }) => {
             }
         })
     }
+    const setTipo = (tipo) => {
+        setLogin(estadoAnterior => {
+            return {
+                ...estadoAnterior,
+                tipo
+            }
+        })
+    }
     
 
     const submeterLogin = () => {
@@ -56,6 +66,7 @@ export const LoginProvider = ({ children }) => {
         login,
         setEmail,
         setSenha,
+        setTipo,
         submeterLogin
     }
 

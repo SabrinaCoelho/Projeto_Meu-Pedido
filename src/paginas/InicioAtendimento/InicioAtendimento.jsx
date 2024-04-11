@@ -1,19 +1,20 @@
 import { Col, Row } from "react-grid-system"
 import { CampoTexto } from "../../componentes/CampoTexto/CampoTexto"
-import { useLoginContext } from "../../contexto/Login"
+import { useAtendimentoContext } from "../../contexto/Atendimento"
 import { Botao } from "../../componentes/Botao/Botao"
 
-export const Login = () => {
+export const Atendimento = () => {
 
     const {
-        login,
-        setEmail,
-        setSenha
-    } = useLoginContext()
+        atendimento,
+        setCliente,
+        setMesa,
+        setComanda
+    } = useAtendimentoContext()
 
     const entrar = (event) => {
         event.preventDefault();
-        console.log(login)
+        console.log(atendimento)
     }
     
     return (
@@ -23,9 +24,9 @@ export const Login = () => {
                     <Row>
                         <Col>
                             <CampoTexto 
-                                titulo="Usuário" 
-                                valor={login.email}
-                                onChange={setEmail}
+                                titulo="Cliente" 
+                                valor={atendimento.cliente}
+                                onChange={setCliente}
                                 tipo="text"
                             />
                         </Col>
@@ -33,10 +34,20 @@ export const Login = () => {
                     <Row>
                         <Col >
                             <CampoTexto 
-                                titulo="Senha" 
-                                valor={login.senha}
-                                onChange={setSenha}
-                                tipo="password"
+                                titulo="Mesa" 
+                                valor={atendimento.mesa}
+                                onChange={setMesa}
+                                tipo="text"
+                            />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col >
+                            <CampoTexto 
+                                titulo="Comanda" 
+                                valor={atendimento.comanda}
+                                onChange={setComanda}
+                                tipo="text"
                             />
                         </Col>
                     </Row>
@@ -48,6 +59,5 @@ export const Login = () => {
                 </Col>
             </Row>
         </form>
-        
     )
 }
