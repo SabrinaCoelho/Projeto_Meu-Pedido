@@ -5,6 +5,9 @@ import { Cabecalho } from '../componentes/Cabecalho/Cabecalho';
 import { Tipografia } from '../componentes/Tipografia/Tipografia';
 import { Link } from '../componentes/Link/Link';
 import { Link as RouterLink } from 'react-router-dom'; 
+import { useCadastroUsuarioContext } from "../contexto/CadastroUsuario"
+
+
 
 const SideMenu = styled.div`
     height: 100%;
@@ -33,12 +36,31 @@ const Conteudo = styled.div`
     margin-left: 200px;
 `
 export const LayoutBasePerfil = () => {
-    let teste = ["About", "services"]
+    const { 
+        usuario
+    } = useCadastroUsuarioContext()
+
+    let itens = []
+
+    if(usuario.tipo == '1'){//atendimento
+        itens = ["Atualizar cadastro", "Histórico de atendimentos", "Iniciar atendimento", "Pedidos em andamento"]
+    }else if(usuario.tipo == '2'){//cliente
+        itens = ["Atualizar cadastro", "Histórico de atendimentos", "Iniciar atendimento", "Restaurantes", "Comanda digital"]
+    }else{
+        itens = ["Atualizar cadastro", "Configurar funcionários", "Cardápio", "Histórico de atendimentos", "Chamados", "Pedidos"]
+    }
     return(
         <>
             <SideMenu>
+                <div>
+                    <Tipografia variante="h4" componente="h1">Perfil</Tipografia>
+                </div>
                 {
-                    teste.map(e => (<SideMenuItem>{e}</SideMenuItem>))
+                    itens.map(e => (<SideMenuItem>
+                        <Tipografia variante="body" componente="body">
+                            {e}
+                        </Tipografia>
+                    </SideMenuItem>))
                 }
             </SideMenu>
             <Conteudo>
