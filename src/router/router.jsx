@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import { LayoutBase } from "../paginas/LayoutBase";
+import { LayoutBasePerfil } from "../paginas/LayoutBasePerfil";
 import { Inicio } from "../paginas/Inicio/Inicio";
 import { Login } from "../paginas/Login/Login";
 import { ComandaDigital } from "../paginas/ComandaDigital/ComandaDigital";
@@ -35,6 +36,16 @@ export const router = createBrowserRouter([
                         element: <CadastroUsuario/>
                     },
                 ] 
+            },
+            {
+                path: "perfil",
+                element: <LayoutBasePerfil/>,
+                children:[
+                    {
+                        path: "atualizar-dados",
+                        element: <h1>KIRYU-CHAN</h1>
+                    }
+                ]
             }
         ]
     }
