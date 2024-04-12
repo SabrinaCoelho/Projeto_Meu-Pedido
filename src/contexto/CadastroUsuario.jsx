@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const usuarioInicial = {
-    tipo: '3',
+    tipo: '',
     nome: '',
     email: '',
     senha:'',

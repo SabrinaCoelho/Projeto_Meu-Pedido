@@ -9,7 +9,6 @@ function App() {
     <ProvedorTema>
       <Estilos/>
       <RouterProvider router={router}/>
-      <Outlet/>
     </ProvedorTema>
   );
 }
