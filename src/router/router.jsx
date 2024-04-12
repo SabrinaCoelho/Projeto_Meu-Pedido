@@ -8,6 +8,7 @@ import { SelecaoTipoUsuario } from "../paginas/CadastroUsuario/SelecaoTipoUsuari
 import { CadastroUsuario } from "../paginas/CadastroUsuario/CadastroUsuario";
 import { Tipografia } from "../componentes/Tipografia/Tipografia";
 import { Atendimento } from "../paginas/InicioAtendimento/InicioAtendimento";
+import { PesquisarRestaurantes } from "../paginas/PesquisaRestaurantes/PesquisaRestaurantes";
 
 export const router = createBrowserRouter([
     
@@ -26,6 +27,10 @@ export const router = createBrowserRouter([
             {
                 path: "iniciar-atendimento",
                 element: <Atendimento/>
+            },
+            {
+                path: "restaurantes",
+                element: <PesquisarRestaurantes/>
             },
         ]
     },

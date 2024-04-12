@@ -20,7 +20,7 @@ export const Atendimento = () => {
     return (
         <form onSubmit={entrar}>
             <Row justify="center" >
-                <Col xxxl={6} xxl={6} xl={6} lg={6} md={8} sm={12}>
+                <Col xxxl={4} xxl={4} xl={4} lg={4} md={8} sm={12}>
                     <Row>
                         <Col>
                             <CampoTexto 

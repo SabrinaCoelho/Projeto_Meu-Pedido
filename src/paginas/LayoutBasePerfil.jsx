@@ -5,9 +5,9 @@ import { Cabecalho } from '../componentes/Cabecalho/Cabecalho';
 import { Tipografia } from '../componentes/Tipografia/Tipografia';
 import { Link } from '../componentes/Link/Link';
 import { Link as RouterLink } from 'react-router-dom'; 
-import { useCadastroUsuarioContext } from "../contexto/CadastroUsuario"
-
-
+import { CadastroUsuarioProvider } from "../contexto/CadastroUsuario";
+import { LoginProvider } from "../contexto/Login";
+import { useLoginContext } from "../contexto/Login"
 
 const SideMenu = styled.div`
     height: 100%;
@@ -18,16 +18,14 @@ const SideMenu = styled.div`
     left: 0;
     background-color: #111;
     overflow-x: hidden;
-    padding-top: 20px;
-
 `
 const SideMenuItem = styled.a`
-    padding: 6px 6px 6px 32px;
+    padding: 6px 6px 6px 6px;
     text-decoration: none;
     font-size: 25px;
     color: #818181;
     display: block;
-
+    margin: 0;
     &:hover{
         color: #f1f1f1;
     }
@@ -35,50 +33,132 @@ const SideMenuItem = styled.a`
 const Conteudo = styled.div`
     margin-left: 200px;
 `
+const ContainerPerfil = styled.div`
+    height: 200px;
+    width: 100%;
+    background-color: pink;
+`
 export const LayoutBasePerfil = () => {
-    const { 
-        usuario
-    } = useCadastroUsuarioContext()
-
+    const {
+        login
+    } = useLoginContext()
+    //let teste = ["About", "services"]
     let itens = []
-
-    if(usuario.tipo == '1'){//atendimento
-        itens = ["Atualizar cadastro", "Histórico de atendimentos", "Iniciar atendimento", "Pedidos em andamento"]
-    }else if(usuario.tipo == '2'){//cliente
-        itens = ["Atualizar cadastro", "Histórico de atendimentos", "Iniciar atendimento", "Restaurantes", "Comanda digital"]
+    if(login.tipo == '1'){
+        itens = [
+            {
+                texto: "Atualizar cadastro",
+                link: "/perfil/atualizar-dados"
+            },
+            {
+                texto: "Configurar funcionários",
+                link: "/perfil/configurar-funcionarios"
+            },
+            {
+                texto: "Cardápio",
+                link: "/perfil/cardapio"
+            },
+            {
+                texto: "Histórico de atendimentos",
+                link: "/perfil/historico-atendimentos"
+            },
+            {
+                texto: "Chamados",
+                link: "/perfil/chamados"
+            },
+            {
+                texto: "Pedidos",
+                link: "/perfil/pedidos"
+            },
+        ]
+    }else if(login.tipo == '2'){
+        itens = [
+            {
+                texto: "Atualizar cadastro",
+                link: "/perfil/atualizar-dados"
+            },
+            {
+                texto: "Histórico de atendimentos",
+                link: "/perfil/historico-atendimentos"
+            },
+            {
+                texto: "Iniciar atendimento",
+                link: "/perfil/iniciar-atendimento"
+            },
+            {
+                texto: "Comandas em andamento",
+                link: "/perfil/comandas-em-andamento"
+            },
+        ]
     }else{
-        itens = ["Atualizar cadastro", "Configurar funcionários", "Cardápio", "Histórico de atendimentos", "Chamados", "Pedidos"]
+        itens = [
+            {
+                texto: "Atualizar cadastro",
+                link: "/perfil/atualizar-dados"
+            },
+            {
+                texto: "Histórico de atendimentos",
+                link: "/perfil/historico-atendimentos"
+            },
+            {
+                texto: "Iniciar atendimento",
+                link: "/perfil/iniciar-atendimento"
+            },
+            {
+                texto: "Restaurantes",
+                link: "/perfil/restaurantes"
+            },
+            {
+                texto: "Comanda digital",
+                link: "/perfil/comanda-digital"
+            },
+        ]
     }
     return(
         <>
-            <SideMenu>
-                <div>
-                    <Tipografia variante="h4" componente="h1">Perfil</Tipografia>
-                </div>
-                {
-                    itens.map(e => (<SideMenuItem>
-                        <Tipografia variante="body" componente="body">
-                            {e}
-                        </Tipografia>
-                    </SideMenuItem>))
-                }
-            </SideMenu>
-            <Conteudo>
-                <Cabecalho>
-                    <Container>
-                        <Row align="right">
-                            <Col style={{ textAlign: 'right' }}>
-                                <Link>
-                                    Logout
-                                </Link>
-                            </Col>
-                        </Row>
-                    </Container>
-                </Cabecalho>
-                <Container fluid style={{minHeight: "80vh"}}>
-                    <Outlet/>
-                </Container>
-            </Conteudo>
+            <CadastroUsuarioProvider>
+                <LoginProvider>
+                    <SideMenu>
+                        <ContainerPerfil>
+                            <Container>
+                                <Row>
+                                    <Col>
+                                        <Tipografia variante="h5" componente="h1">
+                                            Perfil
+                                        </Tipografia>
+                                    </Col>
+                                </Row>
+                            </Container>
+                        </ContainerPerfil>
+                        {
+                            itens.map((e, i) => (
+                            <SideMenuItem key={i}>
+                                <RouterLink to={e.link}>
+                                    <Tipografia variante="body" componente="body" style={{margin: '0'}}>
+                                        {e.texto}
+                                    </Tipografia>
+                                </RouterLink>
+                            </SideMenuItem>))
+                        }
+                    </SideMenu>
+                    <Conteudo>
+                        <Cabecalho>
+                            <Container>
+                                <Row align="right">
+                                    <Col style={{ textAlign: 'right' }}>
+                                        <Link>
+                                            Logout
+                                        </Link>
+                                    </Col>
+                                </Row>
+                            </Container>
+                        </Cabecalho>
+                        <Container fluid style={{minHeight: "80vh"}}>
+                            <Outlet/>
+                        </Container>
+                    </Conteudo>
+                </LoginProvider>
+            </CadastroUsuarioProvider>
         </>
     )
 }
