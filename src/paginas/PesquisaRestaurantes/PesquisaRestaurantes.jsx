@@ -1,4 +1,4 @@
-import { Col, Row } from "react-grid-system"
+import { Container, Col, Row } from "react-grid-system"
 import { CampoTexto } from "../../componentes/CampoTexto/CampoTexto"
 import { useAtendimentoContext } from "../../contexto/Atendimento"
 import { Botao } from "../../componentes/Botao/Botao"
@@ -13,26 +13,24 @@ export const PesquisarRestaurantes = () => {
     }
     
     return (
-        <form onSubmit={entrar}>
-            <Row justify="center" >
-                <Col xxxl={6} xxl={6} xl={6} lg={6} md={8} sm={12}>
-                    <Row>
-                        <Col>
-                            <CampoTexto 
-                                titulo="Nome do restaurante ou ID" 
-                                valor={pesquisa}
-                                onChange={setPesquisa}
-                                tipo="text"
-                            />
-                        </Col>
-                        <Col justify="right">
-                            <Botao variante="primaria" >
-                                Entrar
-                            </Botao>
-                        </Col>
-                    </Row>
-                </Col>
-            </Row>
-        </form>
+        <Container style={{margin: "80px"}}>
+            <form onSubmit={entrar}>
+                <Row justify="center" align="center">
+                    <Col xxl={8} xl={8} lg={8} md={8} sm={12}>
+                        <CampoTexto 
+                            titulo="Nome do restaurante ou ID" 
+                            valor={pesquisa}
+                            onChange={setPesquisa}
+                            tipo="text"
+                        />
+                    </Col>
+                    <Col justify="right" xxl={2} xl={2} lg={2} md={2} sm={12}>
+                        <Botao variante="primaria" >
+                            Pesquisar
+                        </Botao>
+                    </Col>
+                </Row>
+            </form>
+        </Container>
     )
 }

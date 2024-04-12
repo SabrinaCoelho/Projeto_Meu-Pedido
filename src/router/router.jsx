@@ -3,12 +3,13 @@ import { LayoutBase } from "../paginas/LayoutBase";
 import { LayoutBasePerfil } from "../paginas/LayoutBasePerfil";
 import { Inicio } from "../paginas/Inicio/Inicio";
 import { Login } from "../paginas/Login/Login";
-import { ComandaDigital } from "../paginas/ComandaDigital/ComandaDigital";
+import { AcessoComandaDigital } from "../paginas/ComandaDigital/AcessoComandaDigital";
 import { SelecaoTipoUsuario } from "../paginas/CadastroUsuario/SelecaoTipoUsuario";
 import { CadastroUsuario } from "../paginas/CadastroUsuario/CadastroUsuario";
 import { Tipografia } from "../componentes/Tipografia/Tipografia";
 import { Atendimento } from "../paginas/InicioAtendimento/InicioAtendimento";
 import { PesquisarRestaurantes } from "../paginas/PesquisaRestaurantes/PesquisaRestaurantes";
+import { ComandaDigital } from "../paginas/ComandaDigital/Comanda";
 
 export const router = createBrowserRouter([
     
@@ -32,6 +33,10 @@ export const router = createBrowserRouter([
                 path: "restaurantes",
                 element: <PesquisarRestaurantes/>
             },
+            {
+                path: "comanda-digital",
+                element: <ComandaDigital/>
+            },
         ]
     },
     {
@@ -47,8 +52,8 @@ export const router = createBrowserRouter([
                 element: <Login/>
             },
             {
-                path: "comanda-digital",
-                element: <ComandaDigital/>
+                path: "acesso-comanda-digital",
+                element: <AcessoComandaDigital/>
             },
             {
                 path: "cadastro",

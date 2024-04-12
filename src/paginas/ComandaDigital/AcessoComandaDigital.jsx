@@ -3,7 +3,7 @@ import { CampoTexto } from "../../componentes/CampoTexto/CampoTexto"
 import { Botao } from "../../componentes/Botao/Botao"
 
 
-export const ComandaDigital = () => {
+export const AcessoComandaDigital = () => {
 
     /* const {
         comanda,

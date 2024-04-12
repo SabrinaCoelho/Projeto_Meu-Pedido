@@ -35,7 +35,7 @@ export const LayoutBase = () => {
                                     </RouterLink>
                                 </Col>
                                 <Col>
-                                    <RouterLink to="/cadastro/comanda-digital">
+                                    <RouterLink to="/acesso-comanda-digital">
                                         <Link>
                                             Comanda Digital
                                         </Link>
