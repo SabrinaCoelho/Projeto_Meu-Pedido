@@ -11,7 +11,7 @@ import { LoginProvider } from "../contexto/Login";
 export const LayoutBase = () => {
   return (
     <>
-        <CadastroUsuarioProvider>
+        
             <LoginProvider>
                 <Cabecalho>
                     <Container>
@@ -29,23 +29,23 @@ export const LayoutBase = () => {
                                 </Col>
                                 <Col>
                                     <RouterLink to="/cadastro/tipo-usuario">
-                                        <Link>
+                                        
                                             Cadastro
-                                        </Link>
+                                        
                                     </RouterLink>
                                 </Col>
                                 <Col>
                                     <RouterLink to="/acesso-comanda-digital">
-                                        <Link>
+                                        
                                             Comanda Digital
-                                        </Link>
+                                        
                                     </RouterLink>
                                 </Col>
                             </Row>
                             <Col style={{ textAlign: 'right' }}>
-                                <Link>
+                                
                                     Login
-                                </Link>
+                                
                             </Col>
                         </Row>
                     </Container>
@@ -65,7 +65,6 @@ export const LayoutBase = () => {
                     </Container>
                 </Rodape>
             </LoginProvider>
-        </CadastroUsuarioProvider>
     </>
   );
 }

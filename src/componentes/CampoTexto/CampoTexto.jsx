@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { Tipografia } from "../Tipografia/Tipografia"
 
 const LabelEstilizada = styled.label`
     display: block;
@@ -25,11 +26,17 @@ const InputEstilizado = styled.input`
     line-height: 17px;
 `
 
-export const CampoTexto = ({titulo}) => {
-    return(
-        <LabelEstilizada>
-            {titulo}
-            <InputEstilizado />
-        </LabelEstilizada>
-    )
+export const CampoTexto = ({ titulo, valor, onChange, tipo = "text", erro }) => {
+    return (
+    <LabelEstilizada>
+        {titulo}
+        <InputEstilizado 
+            value={valor} 
+            onChange={event => onChange(event.target.value)}
+            type={tipo}
+        />
+        {erro &&  <Tipografia variante="legenda" componente="legenda" color="red">
+            {erro}
+        </Tipografia>}
+    </LabelEstilizada>)
 }

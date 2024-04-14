@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const usuarioInicial = {
-    tipo: '',
+    tipo: '1',
     nome: '',
     email: '',
     senha:'',
@@ -37,7 +37,7 @@ export const useCadastroUsuarioContext = () => {
 
 export const CadastroUsuarioProvider = ({ children }) => {
 
-    const navegar = useNavigate()
+    //const navegar = useNavigate()
 
     const [usuario, setUsuario] = useState(usuarioInicial)
 

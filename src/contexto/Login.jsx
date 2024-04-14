@@ -4,7 +4,11 @@ import { useNavigate } from 'react-router-dom';
 const LoginInicial = {
     email: '',
     senha: '',
-    tipo: '3'
+    tipo: '2'
+}
+
+export const useLoginContext = () => {
+    return useContext(LoginContext);
 }
 
 export const LoginContext = createContext({
@@ -14,10 +18,6 @@ export const LoginContext = createContext({
     setSenha: () => null,
     setTipo: () => null
 })
-
-export const useLoginContext = () => {
-    return useContext(LoginContext);
-}
 
 export const LoginProvider = ({ children }) => {
 
@@ -70,8 +70,7 @@ export const LoginProvider = ({ children }) => {
         submeterLogin
     }
 
-    return (
-    <LoginContext.Provider value={contexto}>
+    return (<LoginContext.Provider value={contexto}>
         {children}
     </LoginContext.Provider>)
 }

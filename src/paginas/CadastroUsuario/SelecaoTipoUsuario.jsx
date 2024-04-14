@@ -55,6 +55,11 @@ export const SelecaoTipoUsuario = () => {
                                     Próxima
                                 </Botao>
                             </RouterLink>
+                            <RouterLink to='/perfil/atualizar-dados'>
+                                <Botao>
+                                    a
+                                </Botao>
+                            </RouterLink>
                         </div>
                     </Col>
                 </Row>

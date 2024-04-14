@@ -6,6 +6,8 @@ import { Link } from "react-router-dom"
 import { useCadastroUsuarioContext } from "../../contexto/CadastroUsuario"
 import { useLocation } from 'react-router-dom';
 import { useLoginContext } from "../../contexto/Login"
+import TextField from '@mui/material/TextField';
+import { Avatar, Button } from "@mui/material"
 
 export const CadastroUsuario = () => {
     const {pathname} = useLocation()
@@ -44,97 +46,167 @@ export const CadastroUsuario = () => {
             <form onSubmit={true ? atualizarCadastro: finalizarCadastro}>
                 {usuario.tipo == 1 ||  login.tipo == '1'? 
                     (
-                    <Row>
-                        <Col>
-                            <Row>
-                                <Col>
-                                    <CampoTexto 
-                                        titulo="Nome" 
-                                        valor={usuario.nome}
+                        <>
+                        <Row justify="center" style={{margin: "1.2rem"}}>
+                            <Avatar
+                                alt="Remy Sharp"
+                                src="/static/images/avatar/1.jpg"
+                                sx={{ width: 150, height: 150 }}
+                            />
+                        </Row>
+                        <Row>
+                            <Col>
+                                <Row>
+                                    <Col>
+                                    <TextField
+                                        fullWidth
+                                        required
+                                        id="outlined-required"
+                                        label="Nome"
+                                        defaultValue=""
                                         onChange={setNome}
+                                        size="small"
+                                        margin="dense"
                                     />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col>
-                                    <CampoTexto 
-                                        titulo="CNPJ" 
-                                        valor={usuario.cnpj}
-                                        onChange={setCnpj}  
-                                        tipo="number"  
-                                    />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col>
-                                    <CampoTexto 
-                                        titulo="E-mail" 
-                                        valor={usuario.email}
-                                        onChange={setEmail}
-                                        tipo='email'    
-                                    />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col>
-                                    <CampoTexto 
-                                        titulo="Endereço" 
-                                        valor={usuario.endereco}
-                                        onChange={setEndereco}   
-                                    />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col>
-                                    <CampoTexto 
-                                        titulo="Telefone" 
-                                        valor={usuario.telefone}
-                                        onChange={setTelefone}   
-                                    />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col>
-                                    <CampoTexto 
-                                        titulo="Texto informativo" 
-                                        valor={usuario.informacoes}
-                                        onChange={setInformacoes}   
-                                    />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col>
-                                    <CampoTexto titulo="Senha"
-                                        valor={usuario.senha}
-                                        onChange={setSenha}    
-                                        tipo='password'    
-                                    />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col>
-                                    <CampoTexto titulo="Repita a Senha"
-                                        valor={usuario.senhaConfirmada}
-                                        onChange={setSenhaConfirmada}    
-                                        tipo='password'    
-                                    />
-                                </Col>
-                            </Row>
-                        </Col>
-                        <Col>
-                            <Row>
-                                <Col>
-                                    <CampoTexto titulo="Texto informativo"
-                                        valor=""
-                                        onChange={null}    
-                                        tipo='text'    
-                                    />
-                                </Col>
-                            </Row>
-                        </Col>
-                    </Row>) : null
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <TextField
+                                            fullWidth
+                                            required
+                                            id="outlined-required"
+                                            label="CNPJ"
+                                            defaultValue=""
+                                            onChange={setCnpj}
+                                            type="number"
+                                            size="small"
+                                            margin="dense"
+                                        />
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <TextField
+                                            fullWidth
+                                            required
+                                            id="outlined-required"
+                                            label="E-mail"
+                                            onChange={setEmail}
+                                            type="email"
+                                            size="small"
+                                            margin="dense"
+                                        />
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <TextField
+                                            fullWidth
+                                            required
+                                            id="outlined-required"
+                                            label="Endereço"
+                                            onChange={setEndereco}
+                                            type="text"
+                                            size="small"
+                                            margin="dense"
+                                        />
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <TextField
+                                            fullWidth
+                                            required
+                                            id="outlined-required"
+                                            label="Endereço"
+                                            onChange={setTelefone}
+                                            type="number"
+                                            size="small"
+                                            margin="dense"
+                                        />
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <TextField
+                                            fullWidth
+                                            required
+                                            id="outlined-required"
+                                            label="Texto informativo"
+                                            onChange={setInformacoes}
+                                            type="text"
+                                            size="small"
+                                            multiline
+                                            rows={4}
+                                            margin="dense"
+                                        />
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <TextField
+                                            fullWidth
+                                            required
+                                            id="outlined-required"
+                                            label="Senha"
+                                            onChange={setSenha}
+                                            type="password"
+                                            size="small"
+                                            margin="dense"
+                                        />
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <TextField
+                                            fullWidth
+                                            required
+                                            id="outlined-required"
+                                            label="Confirmar senha"
+                                            onChange={setSenhaConfirmada}
+                                            type="password"
+                                            size="small"
+                                            margin="dense"
+                                        />
+                                    </Col>
+                                </Row>
+                            </Col>
+                            <Col>
+                                <Row>
+                                    <Col>
+                                        <TextField
+                                            fullWidth
+                                            required
+                                            id="outlined-required"
+                                            label="Texto informativo"
+                                            onChange={setInformacoes}
+                                            type="text"
+                                            size="small"
+                                            multiline
+                                            rows={4}
+                                            margin="dense"
+                                        />
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <TextField
+                                            fullWidth
+                                            required
+                                            id="outlined-required"
+                                            label=""
+                                            type="file"
+                                            size="small"
+                                            margin="dense"
+                                        />
+                                    </Col>
+                                </Row>
+                            </Col>
+                        </Row>
+                    </>) : null
                 }
-                {usuario.tipo == 2 || login.tipo == '2' ? 
+                {/* {usuario.tipo == 2 || login.tipo == '2' ? 
                     (
                     <>
                         <Row>
@@ -221,42 +293,42 @@ export const CadastroUsuario = () => {
                         </Row>
                         
                     </>) : null
-                }
+                }*/}
                 {
                     pathname.includes("cadastro/dados-usuario") ?
                     (
                         <Row>
                             <Col lg={6} md={6} sm={6}>
-                                <Link to="..">
+                                {/* <Link to="..">
                                     <Botao variante="secundaria">
                                         Anterior
                                     </Botao>
-                                </Link>
+                                </Link> */}
                             </Col>
                             <Col lg={6} md={6} sm={6}>
                                 <div style={{ textAlign: 'right' }}>
-                                    {/* <Link to='/cadastro/concluido'> */}
-                                    <Botao>
+                                    
+                                    {/* <Botao>
                                         Próxima
                                     </Botao>
-                                    {/* </Link> */}
+                                     */}
                                 </div>
                             </Col>
                         </Row>
                     ):(
                         <Row>
-                            <Col lg={6} md={6} sm={6}>
+                            <Col>
                                 <div style={{ textAlign: 'right' }}>
-                                    {/* <Link to='/cadastro/concluido'> */}
-                                    <Botao>
-                                        Atualizar cadastro
-                                    </Botao>
-                                    {/* </Link> */}
+                                    
+                                    <Button>
+                                        Atualizar cadastro 
+                                    </Button>
+                                    
                                 </div>
                             </Col>
                         </Row>
                     )
-                }
+                } 
             </form>  
         </Container>
     )

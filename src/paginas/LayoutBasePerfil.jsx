@@ -8,6 +8,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { CadastroUsuarioProvider } from "../contexto/CadastroUsuario";
 import { LoginProvider } from "../contexto/Login";
 import { useLoginContext } from "../contexto/Login"
+import MenuLateral from "../componentes/MenuLateral/MenuLateral"
 
 const SideMenu = styled.div`
     height: 100%;
@@ -42,7 +43,7 @@ export const LayoutBasePerfil = () => {
     const {
         login
     } = useLoginContext()
-    //let teste = ["About", "services"]
+    
     let itens = []
     if(login.tipo == '1'){
         itens = [
@@ -115,9 +116,14 @@ export const LayoutBasePerfil = () => {
         ]
     }
     return(
-        <>
-            <CadastroUsuarioProvider>
-                <LoginProvider>
+        <MenuLateral itensMenu={itens}>
+            <Outlet/>
+        </MenuLateral>
+    )
+}
+
+/* 
+
                     <SideMenu>
                         <ContainerPerfil>
                             <Container>
@@ -157,8 +163,4 @@ export const LayoutBasePerfil = () => {
                             <Outlet/>
                         </Container>
                     </Conteudo>
-                </LoginProvider>
-            </CadastroUsuarioProvider>
-        </>
-    )
-}
+*/
