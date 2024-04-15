@@ -9,7 +9,7 @@ import { CadastroUsuario } from "../paginas/CadastroUsuario/CadastroUsuario";
 import { Tipografia } from "../componentes/Tipografia/Tipografia";
 import { Atendimento } from "../paginas/InicioAtendimento/InicioAtendimento";
 import { PesquisarRestaurantes } from "../paginas/PesquisaRestaurantes/PesquisaRestaurantes";
-import { ComandaDigital } from "../paginas/ComandaDigital/Comanda";
+import { ComandaDigital } from "../paginas/ComandaDigital/ComandaDigital";
 import { LayoutProviders } from "../paginas/LayoutProviders";
 import { Button } from '@mui/material';
 import MenuLateral from "../componentes/MenuLateral/MenuLateral"
@@ -32,7 +32,7 @@ export const router = createBrowserRouter([
                         path: "atualizar-dados",
                         element: <CadastroUsuario/>
                     },
-                    /* {
+                    {
                         path: "iniciar-atendimento",
                         element: <Atendimento/>
                     },
@@ -43,7 +43,7 @@ export const router = createBrowserRouter([
                     {
                         path: "comanda-digital",
                         element: <ComandaDigital/>
-                    }, */
+                    },
                 ]
             },
             /* {

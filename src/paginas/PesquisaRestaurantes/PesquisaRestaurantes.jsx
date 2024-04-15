@@ -3,6 +3,7 @@ import { CampoTexto } from "../../componentes/CampoTexto/CampoTexto"
 import { useAtendimentoContext } from "../../contexto/Atendimento"
 import { Botao } from "../../componentes/Botao/Botao"
 import { useState } from "react"
+import { TextField, Button } from "@mui/material"
 
 export const PesquisarRestaurantes = () => {
     const [pesquisa, setPesquisa] = useState("")
@@ -17,17 +18,21 @@ export const PesquisarRestaurantes = () => {
             <form onSubmit={entrar}>
                 <Row justify="center" align="center">
                     <Col xxl={8} xl={8} lg={8} md={8} sm={12}>
-                        <CampoTexto 
-                            titulo="Nome do restaurante ou ID" 
-                            valor={pesquisa}
+                        <TextField
+                            fullWidth
+                            required
+                            id="outlined-required"
+                            label="Nome do restaurante ou ID"
+                            defaultValue=""
                             onChange={setPesquisa}
-                            tipo="text"
+                            size="small"
+                            margin="dense"
                         />
                     </Col>
                     <Col justify="right" xxl={2} xl={2} lg={2} md={2} sm={12}>
-                        <Botao variante="primaria" >
+                        <Button variant="contained" >
                             Pesquisar
-                        </Botao>
+                        </Button>
                     </Col>
                 </Row>
             </form>

@@ -2,6 +2,7 @@ import { Container, Col, Row } from "react-grid-system"
 import { CampoTexto } from "../../componentes/CampoTexto/CampoTexto"
 import { useAtendimentoContext } from "../../contexto/Atendimento"
 import { Botao } from "../../componentes/Botao/Botao"
+import { TextField, Button } from '@mui/material';
 
 export const Atendimento = () => {
 
@@ -24,38 +25,50 @@ export const Atendimento = () => {
                     <Col xxxl={4} xxl={4} xl={4} lg={4} md={8} sm={12}>
                         <Row>
                             <Col>
-                                <CampoTexto 
-                                    titulo="Cliente" 
-                                    valor={atendimento.cliente}
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="outlined-required"
+                                    label="Cliente"
                                     onChange={setCliente}
-                                    tipo="text"
+                                    type="text"
+                                    size="small"
+                                    margin="dense"
                                 />
                             </Col>
                         </Row>
                         <Row>
                             <Col >
-                                <CampoTexto 
-                                    titulo="Mesa" 
-                                    valor={atendimento.mesa}
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="outlined-required"
+                                    label="Mesa"
                                     onChange={setMesa}
-                                    tipo="text"
+                                    type="text"
+                                    size="small"
+                                    margin="dense"
                                 />
                             </Col>
                         </Row>
                         <Row>
                             <Col >
-                                <CampoTexto 
-                                    titulo="Comanda" 
-                                    valor={atendimento.comanda}
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="outlined-required"
+                                    label="Comanda"
                                     onChange={setComanda}
-                                    tipo="text"
+                                    type="text"
+                                    size="small"
+                                    margin="dense"
                                 />
                             </Col>
                         </Row>
                         <Row justify="center">
-                            <Botao variante="primaria" >
+                            <Button variant="contained" >
                                 Entrar
-                            </Botao>
+                            </Button>
                         </Row>
                     </Col>
                 </Row>

@@ -47,9 +47,9 @@ function MenuLateral({children, itensMenu}) {
       <Toolbar>
         <Row justify="center" style={{margin: "1.2rem"}}>
           <Avatar
-              alt="Remy Sharp"
-              src="/static/images/avatar/1.jpg"
-              sx={{ width: 80, height: 80 }}
+            alt="Remy Sharp"
+            src="/static/images/avatar/1.jpg"
+            sx={{ width: 80, height: 80 }}
           />
       </Row>
       </Toolbar>
@@ -57,7 +57,7 @@ function MenuLateral({children, itensMenu}) {
       <List>
         {itensMenu.map((item, index) => (
           <ListItem key={index} disablePadding>
-            <Link to={item.link} style={{textDecoration: "none", color: "inherit"}}>
+            <Link to={item.link} style={{textDecoration: "none", color: "inherit", width: "100%"}}>
               <ListItemButton>
                 <ListItemIcon>
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
@@ -65,19 +65,6 @@ function MenuLateral({children, itensMenu}) {
                 <ListItemText primary={item.texto} />
               </ListItemButton>
             </Link>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
           </ListItem>
         ))}
       </List>

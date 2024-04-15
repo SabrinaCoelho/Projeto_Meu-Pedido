@@ -44,30 +44,29 @@ export const CadastroUsuario = () => {
     return (
         <Container>
             <form onSubmit={true ? atualizarCadastro: finalizarCadastro}>
+                <Row justify="center" style={{margin: "1.2rem"}}>
+                    <Avatar
+                        alt="Remy Sharp"
+                        src="/static/images/avatar/1.jpg"
+                        sx={{ width: 150, height: 150 }}
+                    />
+                </Row>
                 {usuario.tipo == 1 ||  login.tipo == '1'? 
                     (
-                        <>
-                        <Row justify="center" style={{margin: "1.2rem"}}>
-                            <Avatar
-                                alt="Remy Sharp"
-                                src="/static/images/avatar/1.jpg"
-                                sx={{ width: 150, height: 150 }}
-                            />
-                        </Row>
                         <Row>
                             <Col>
                                 <Row>
                                     <Col>
-                                    <TextField
-                                        fullWidth
-                                        required
-                                        id="outlined-required"
-                                        label="Nome"
-                                        defaultValue=""
-                                        onChange={setNome}
-                                        size="small"
-                                        margin="dense"
-                                    />
+                                        <TextField
+                                            fullWidth
+                                            required
+                                            id="outlined-required"
+                                            label="Nome"
+                                            defaultValue=""
+                                            onChange={setNome}
+                                            size="small"
+                                            margin="dense"
+                                        />
                                     </Col>
                                 </Row>
                                 <Row>
@@ -204,46 +203,64 @@ export const CadastroUsuario = () => {
                                 </Row>
                             </Col>
                         </Row>
-                    </>) : null
+                    ) : null
                 }
-                {/* {usuario.tipo == 2 || login.tipo == '2' ? 
+                {usuario.tipo == 2 || login.tipo == '2' ? 
                     (
                     <>
                         <Row>
                             <Col>
-                                <CampoTexto 
-                                    titulo="Nome Completo" 
-                                    valor={usuario.nome}
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="outlined-required"
+                                    label="Nome completo"
+                                    defaultValue=""
                                     onChange={setNome}
+                                    size="small"
+                                    margin="dense"
                                 />
                             </Col>
                         </Row>
                         <Row>
                             <Col>
-                                <CampoTexto 
-                                    titulo="Funcionário do restaurante:" 
-                                    valor={usuario.restauranteId}
-                                    onChange={setRestauranteId}    
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="outlined-required"
+                                    label="Funcionário do restaurante"
+                                    defaultValue=""
+                                    onChange={setRestauranteId}
+                                    size="small"
+                                    margin="dense"
                                 />
                             </Col>
                         </Row>
                         <Row>
                             <Col>
-                                <CampoTexto 
-                                    titulo="Senha" 
-                                    valor={usuario.senha}
-                                    onChange={setSenha}   
-                                    tipo="password" 
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="outlined-required"
+                                    label="Senha"
+                                    onChange={setSenha}
+                                    type="password"
+                                    size="small"
+                                    margin="dense"
                                 />
                             </Col>
                         </Row>
                         <Row>
-                            <Col >
-                                <CampoTexto 
-                                    titulo="Repita a Senha" 
-                                    valor={usuario.senhaConfirmada}
+                            <Col>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="outlined-required"
+                                    label="Confirmar senha"
                                     onChange={setSenhaConfirmada}
-                                    tipo="password" 
+                                    type="password"
+                                    size="small"
+                                    margin="dense"
                                 />
                             </Col>
                         </Row>
@@ -255,63 +272,79 @@ export const CadastroUsuario = () => {
                     <>
                         <Row>
                             <Col>
-                                <CampoTexto 
-                                    titulo="Nome Completo" 
-                                    valor={usuario.nome}
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="outlined-required"
+                                    label="Nome completo"
+                                    defaultValue=""
                                     onChange={setNome}
+                                    size="small"
+                                    margin="dense"
                                 />
                             </Col>
                         </Row>
                         <Row>
                             <Col>
-                                <CampoTexto 
-                                    titulo="Email" 
-                                    valor={usuario.email}
-                                    onChange={setEmail}    
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="outlined-required"
+                                    label="Email"
+                                    onChange={setEmail}
+                                    type="email"
+                                    size="small"
+                                    margin="dense"
                                 />
                             </Col>
                         </Row>
                         <Row>
-                            <Col >
-                                <CampoTexto 
-                                    titulo="Senha" 
-                                    valor={usuario.senha}
-                                    onChange={setSenha}  
-                                    tipo="password"   
+                            <Col>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="outlined-required"
+                                    label="Senha"
+                                    onChange={setSenha}
+                                    type="password"
+                                    size="small"
+                                    margin="dense"
                                 />
                             </Col>
                         </Row>
                         <Row>
-                            <Col >
-                                <CampoTexto 
-                                    titulo="Repita a Senha" 
-                                    valor={usuario.senhaConfirmada}
-                                    onChange={setSenhaConfirmada}    
-                                    tipo="password" 
+                            <Col>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="outlined-required"
+                                    label="Confirmar senha"
+                                    onChange={setSenhaConfirmada}
+                                    type="password"
+                                    size="small"
+                                    margin="dense"
                                 />
                             </Col>
                         </Row>
                         
                     </>) : null
-                }*/}
+                }
                 {
                     pathname.includes("cadastro/dados-usuario") ?
                     (
                         <Row>
                             <Col lg={6} md={6} sm={6}>
-                                {/* <Link to="..">
-                                    <Botao variante="secundaria">
+                                {/* <Link to=".."> */}
+                                    <Button variant="contained">
                                         Anterior
-                                    </Botao>
-                                </Link> */}
+                                    </Button>
+                                {/* </Link> */}
                             </Col>
                             <Col lg={6} md={6} sm={6}>
                                 <div style={{ textAlign: 'right' }}>
-                                    
-                                    {/* <Botao>
+                                    <Button variant="contained">
                                         Próxima
-                                    </Botao>
-                                     */}
+                                    </Button>
                                 </div>
                             </Col>
                         </Row>
@@ -319,11 +352,9 @@ export const CadastroUsuario = () => {
                         <Row>
                             <Col>
                                 <div style={{ textAlign: 'right' }}>
-                                    
-                                    <Button>
+                                    <Button varinat="contained">
                                         Atualizar cadastro 
                                     </Button>
-                                    
                                 </div>
                             </Col>
                         </Row>
