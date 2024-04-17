@@ -15,6 +15,8 @@ import { LayoutProviders } from "../paginas/LayoutProviders";
 import { Button } from '@mui/material';
 import MenuLateral from "../componentes/MenuLateral/MenuLateral"
 import Typography from '@mui/material/Typography';
+import ConfigurarFuncionario from "../paginas/ConfigurarFuncionario/ConfigurarFuncionario";
+import { HistoricoAtendimentos } from "../paginas/HistoricoAtendimentos/HistoricoAtendimentos";
 
 export const router = createBrowserRouter([
     {
@@ -48,6 +50,14 @@ export const router = createBrowserRouter([
                     {
                         path: "cardapio",
                         element: <Cardapio/>
+                    },
+                    {
+                        path: "configurar-funcionarios",//TODO
+                        element: <ConfigurarFuncionario/>
+                    },
+                    {
+                        path: "historico-atendimentos",
+                        element: <HistoricoAtendimentos/>
                     },
                 ]
             },
