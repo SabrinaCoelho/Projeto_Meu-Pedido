@@ -124,7 +124,7 @@ export const ComandaDigital = () => {
                                         </CardContent>
                                         <CardActions>
                                             <Container>
-                                                <Row justify="right">
+                                                <Row style={{justifyContent: "right"}}>
                                                     <Button variant="contained">
                                                         Cancelar
                                                     </Button>
@@ -139,12 +139,12 @@ export const ComandaDigital = () => {
                 }
             <Row justify="between">
                 <Col>
-                    <Typography variante="h1" componente="h1">
+                    <Typography variant="h5" component="h1">
                         Total
                     </Typography>
                 </Col>
                 <Col>
-                    <Typography variante="h1" componente="h1">
+                    <Typography variant="h5" component="h1">
                         {comandaPedidos.total}
                     </Typography>
                 </Col>

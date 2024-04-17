@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 const LoginInicial = {
     email: '',
     senha: '',
-    tipo: '3'
+    tipo: '1'
 }
 
 export const useLoginContext = () => {

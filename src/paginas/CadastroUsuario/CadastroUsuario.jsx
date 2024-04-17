@@ -352,7 +352,7 @@ export const CadastroUsuario = () => {
                         <Row>
                             <Col>
                                 <div style={{ textAlign: 'right' }}>
-                                    <Button varinat="contained">
+                                    <Button variant="contained">
                                         Atualizar cadastro 
                                     </Button>
                                 </div>

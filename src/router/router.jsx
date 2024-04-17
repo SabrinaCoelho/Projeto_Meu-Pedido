@@ -10,6 +10,7 @@ import { Tipografia } from "../componentes/Tipografia/Tipografia";
 import { Atendimento } from "../paginas/InicioAtendimento/InicioAtendimento";
 import { PesquisarRestaurantes } from "../paginas/PesquisaRestaurantes/PesquisaRestaurantes";
 import { ComandaDigital } from "../paginas/ComandaDigital/ComandaDigital";
+import { Cardapio } from "../paginas/Cardapio/Cardapio";
 import { LayoutProviders } from "../paginas/LayoutProviders";
 import { Button } from '@mui/material';
 import MenuLateral from "../componentes/MenuLateral/MenuLateral"
@@ -43,6 +44,10 @@ export const router = createBrowserRouter([
                     {
                         path: "comanda-digital",
                         element: <ComandaDigital/>
+                    },
+                    {
+                        path: "cardapio",
+                        element: <Cardapio/>
                     },
                 ]
             },
