@@ -1,7 +1,9 @@
 import { createContext, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { tipoUsuario } from '../TipoUsuarioEnum';
 
 const usuarioInicial = {
+    id: '',
     tipo: '',
     nome: '',
     email: '',
@@ -17,6 +19,7 @@ const usuarioInicial = {
 export const CadastroUsuarioContext = createContext({
     usuario: usuarioInicial,
     erros: {},
+    setId: () => null,
     setTipo: () => null,
     setNome: () => null,
     setEmail: () => null,
@@ -41,6 +44,18 @@ export const CadastroUsuarioProvider = ({ children }) => {
 
     const [usuario, setUsuario] = useState(usuarioInicial)
 
+
+    const setId = (id) => {
+        console.log("***********")
+        console.log(id)
+        setUsuario(estadoAnterior => {
+            return {
+                ...estadoAnterior,
+                id
+            }
+        })
+    }
+    
     const setTipo = (tipo) => {
         console.log("***********")
         console.log(tipo)
@@ -136,6 +151,7 @@ export const CadastroUsuarioProvider = ({ children }) => {
 
     const contexto = {
         usuario,
+        setId,
         setTipo,
         setNome,
         setEndereco,

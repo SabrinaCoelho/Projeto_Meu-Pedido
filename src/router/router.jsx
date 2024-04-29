@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, useParams } from "react-router-dom";
 import { LayoutBase } from "../paginas/LayoutBase";
 import { LayoutBasePerfil } from "../paginas/LayoutBasePerfil";
 import { Inicio } from "../paginas/Inicio/Inicio";
@@ -28,7 +28,7 @@ export const router = createBrowserRouter([
                 element: <LayoutBasePerfil/>,
                 children:[
                     {
-                        path: "",
+                        path: ":userId",
                         element: <Typography variant="h1" component="h1">O que deseja fazer?</Typography>
                     },
                     {
@@ -52,7 +52,7 @@ export const router = createBrowserRouter([
                         element: <Cardapio/>
                     },
                     {
-                        path: "configurar-funcionarios",//TODO
+                        path: "configurar-funcionarios",
                         element: <ConfigurarFuncionario/>
                     },
                     {
@@ -61,7 +61,7 @@ export const router = createBrowserRouter([
                     },
                 ]
             },
-            /* {
+            {
                 path: "",
                 element: <LayoutBase/>,
                 children: [
@@ -91,7 +91,7 @@ export const router = createBrowserRouter([
                         ] 
                     }
                 ]
-            }, */
+            },
             
         ]
     }

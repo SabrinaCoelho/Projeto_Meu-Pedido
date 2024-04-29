@@ -5,6 +5,7 @@ import { Col, Row } from "react-grid-system"
 import { Botao } from "../../componentes/Botao/Botao"
 import { Link } from "../../componentes/Link/Link"
 import { Link as RouterLink } from "react-router-dom"
+import { Typography } from "@mui/material"
 
 const opcoes = [
     {
@@ -28,12 +29,12 @@ export const SelecaoTipoUsuario = () => {
         <Row justify="center" >
             <Col xxxl={6} xxl={6} xl={6} lg={6} md={8} sm={12}>
                 <div style={{ textAlign: 'center' }}>
-                    <Tipografia variante="h3" componente="h1">
+                    <Typography variant="h3" component="h1">
                         Crie seu cadastro
-                    </Tipografia>
-                    <Tipografia variante='h4' componente='h2'>
-                        O que você é?
-                    </Tipografia>
+                    </Typography>
+                    <Typography variant="h4" component="h2">
+                    O que você é?
+                    </Typography>
                 </div>
                 <GrupoRadio 
                     opcoes={opcoes} 

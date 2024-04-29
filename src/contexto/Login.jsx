@@ -25,8 +25,9 @@ export const LoginProvider = ({ children }) => {
 
     const [login, setLogin] = useState(LoginInicial)
 
-    const setEmail = (email) => {
-        console.log(email)
+    const setEmail = ({target}) => {
+        console.log(target.value)
+        const email = target.value;
         setLogin(estadoAnterior => {
             return {
                 ...estadoAnterior,
@@ -34,7 +35,9 @@ export const LoginProvider = ({ children }) => {
             }
         })
     }
-    const setSenha = (senha) => {
+    const setSenha = ({target}) => {
+        console.log(target.value)
+        const senha = target.value;
         setLogin(estadoAnterior => {
             return {
                 ...estadoAnterior,

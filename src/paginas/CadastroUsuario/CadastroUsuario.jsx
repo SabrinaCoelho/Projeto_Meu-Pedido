@@ -62,7 +62,7 @@ export const CadastroUsuario = () => {
                                             required
                                             id="outlined-required"
                                             label="Nome"
-                                            defaultValue=""
+                                            defaultValue={usuario.nome}
                                             onChange={setNome}
                                             size="small"
                                             margin="dense"
@@ -108,36 +108,6 @@ export const CadastroUsuario = () => {
                                             onChange={setEndereco}
                                             type="text"
                                             size="small"
-                                            margin="dense"
-                                        />
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col>
-                                        <TextField
-                                            fullWidth
-                                            required
-                                            id="outlined-required"
-                                            label="Endereço"
-                                            onChange={setTelefone}
-                                            type="number"
-                                            size="small"
-                                            margin="dense"
-                                        />
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col>
-                                        <TextField
-                                            fullWidth
-                                            required
-                                            id="outlined-required"
-                                            label="Texto informativo"
-                                            onChange={setInformacoes}
-                                            type="text"
-                                            size="small"
-                                            multiline
-                                            rows={4}
                                             margin="dense"
                                         />
                                     </Col>

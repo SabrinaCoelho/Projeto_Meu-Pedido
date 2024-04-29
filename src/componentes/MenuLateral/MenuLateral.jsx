@@ -51,7 +51,7 @@ function MenuLateral({children, itensMenu}) {
             src="/static/images/avatar/1.jpg"
             sx={{ width: 80, height: 80 }}
           />
-      </Row>
+        </Row>
       </Toolbar>
       <Divider />
       <List>
@@ -91,9 +91,9 @@ function MenuLateral({children, itensMenu}) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          {/* <Typography variant="h6" noWrap component="div">
             Responsive drawer
-          </Typography>
+          </Typography> */}
         </Toolbar>
       </AppBar>
       <Box

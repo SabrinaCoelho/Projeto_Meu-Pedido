@@ -1,14 +1,16 @@
 import styled from '@emotion/styled'
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, useParams } from "react-router-dom";
 import { Col, Container, Row } from 'react-grid-system';
 import { Cabecalho } from '../componentes/Cabecalho/Cabecalho';
 import { Tipografia } from '../componentes/Tipografia/Tipografia';
 import { Link } from '../componentes/Link/Link';
 import { Link as RouterLink } from 'react-router-dom'; 
-import { CadastroUsuarioProvider } from "../contexto/CadastroUsuario";
+import { CadastroUsuarioProvider, useCadastroUsuarioContext } from "../contexto/CadastroUsuario";
 import { LoginProvider } from "../contexto/Login";
 import { useLoginContext } from "../contexto/Login"
 import MenuLateral from "../componentes/MenuLateral/MenuLateral"
+import { useEffect } from 'react';
+import axios from 'axios';
 
 const SideMenu = styled.div`
     height: 100%;
@@ -40,10 +42,51 @@ const ContainerPerfil = styled.div`
     background-color: pink;
 `
 export const LayoutBasePerfil = () => {
+    
+    let {pathname} = useLocation()
+    let teste = pathname.split("/")
+    pathname = teste[1]
+    console.log(pathname)
+    let userId = teste[2]
+
     const {
         login
     } = useLoginContext()
     
+    const { 
+        setNome, 
+        setTelefone,
+        setRestauranteId,
+        setEmail, 
+        setSenha, 
+        setCnpj, 
+        setSenhaConfirmada, 
+        setEndereco,
+        setInformacoes,
+        submeterUsuario
+    } = useCadastroUsuarioContext()
+    
+    useEffect(
+        () => {
+            axios.get("http://localhost:3001/usuarios/"+userId, )
+            .then(
+                res => {
+                    console.log("OK, CHAOS!")
+                    console.log(res);
+                    if(res){
+                        setNome(res.data.nome);
+                        setEmail(res.data.email);
+                    }
+                }
+            )
+            .catch(err => {//TODO
+                console.log("NAO deu certo")
+            }
+
+            ) 
+        }, [login, userId]
+    )
+
     let itens = []
     if(login.tipo == '1'){
         itens = [
