@@ -2,7 +2,7 @@ import { Tipografia } from "../../componentes/Tipografia/Tipografia"
 import { CampoTexto } from "../../componentes/CampoTexto/CampoTexto"
 import { Container, Col, Row } from "react-grid-system"
 import { Botao } from "../../componentes/Botao/Botao"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useCadastroUsuarioContext } from "../../contexto/CadastroUsuario"
 import { useLocation } from 'react-router-dom';
 import { useLoginContext } from "../../contexto/Login"
@@ -11,7 +11,6 @@ import { Avatar, Button } from "@mui/material"
 
 export const CadastroUsuario = () => {
     const {pathname} = useLocation()
-    console.log(pathname)
 
     const {
         login
@@ -30,10 +29,11 @@ export const CadastroUsuario = () => {
         setInformacoes,
         submeterUsuario
     } = useCadastroUsuarioContext()
-    console.log(usuario)
+    
     const finalizarCadastro = (evento) => {
         evento.preventDefault();
-        submeterUsuario()
+        console.log(usuario)
+        //submeterUsuario()
     }
     const atualizarCadastro = (evento) => {
         console.log("OK");
@@ -51,7 +51,7 @@ export const CadastroUsuario = () => {
                         sx={{ width: 150, height: 150 }}
                     />
                 </Row>
-                {usuario.tipo == 1 ||  login.tipo == '1'? 
+                {usuario.tipo == "restaurante" ? 
                     (
                         <Row>
                             <Col>
@@ -63,7 +63,7 @@ export const CadastroUsuario = () => {
                                             id="outlined-required"
                                             label="Nome"
                                             defaultValue={usuario.nome}
-                                            onChange={setNome}
+                                            onChange={({target}) => setNome(target.value)}
                                             size="small"
                                             margin="dense"
                                         />
@@ -77,7 +77,7 @@ export const CadastroUsuario = () => {
                                             id="outlined-required"
                                             label="CNPJ"
                                             defaultValue=""
-                                            onChange={setCnpj}
+                                            onChange={({target}) => setCnpj(target.value)}
                                             type="number"
                                             size="small"
                                             margin="dense"
@@ -91,7 +91,7 @@ export const CadastroUsuario = () => {
                                             required
                                             id="outlined-required"
                                             label="E-mail"
-                                            onChange={setEmail}
+                                            onChange={({target}) => setEmail(target.value)}
                                             type="email"
                                             size="small"
                                             margin="dense"
@@ -105,7 +105,7 @@ export const CadastroUsuario = () => {
                                             required
                                             id="outlined-required"
                                             label="Endereço"
-                                            onChange={setEndereco}
+                                            onChange={({target}) => setEndereco(target.value)}
                                             type="text"
                                             size="small"
                                             margin="dense"
@@ -119,7 +119,7 @@ export const CadastroUsuario = () => {
                                             required
                                             id="outlined-required"
                                             label="Senha"
-                                            onChange={setSenha}
+                                            onChange={({target}) => setSenha(target.value)}
                                             type="password"
                                             size="small"
                                             margin="dense"
@@ -133,7 +133,7 @@ export const CadastroUsuario = () => {
                                             required
                                             id="outlined-required"
                                             label="Confirmar senha"
-                                            onChange={setSenhaConfirmada}
+                                            onChange={({target}) => setSenhaConfirmada(target.value)}
                                             type="password"
                                             size="small"
                                             margin="dense"
@@ -149,7 +149,7 @@ export const CadastroUsuario = () => {
                                             required
                                             id="outlined-required"
                                             label="Texto informativo"
-                                            onChange={setInformacoes}
+                                            onChange={({target}) => setInformacoes(target.value)}
                                             type="text"
                                             size="small"
                                             multiline
@@ -175,7 +175,7 @@ export const CadastroUsuario = () => {
                         </Row>
                     ) : null
                 }
-                {usuario.tipo == 2 || login.tipo == '2' ? 
+                {usuario.tipo == "atendente" ? 
                     (
                     <>
                         <Row>
@@ -185,8 +185,8 @@ export const CadastroUsuario = () => {
                                     required
                                     id="outlined-required"
                                     label="Nome completo"
-                                    defaultValue=""
-                                    onChange={setNome}
+                                    defaultValue={usuario.nome}
+                                    onChange={({target}) => setNome(target.value)}
                                     size="small"
                                     margin="dense"
                                 />
@@ -199,8 +199,8 @@ export const CadastroUsuario = () => {
                                     required
                                     id="outlined-required"
                                     label="Funcionário do restaurante"
-                                    defaultValue=""
-                                    onChange={setRestauranteId}
+                                    defaultValue={usuario.restauranteId}
+                                    onChange={({target}) => setRestauranteId(target.value)}
                                     size="small"
                                     margin="dense"
                                 />
@@ -213,7 +213,8 @@ export const CadastroUsuario = () => {
                                     required
                                     id="outlined-required"
                                     label="Senha"
-                                    onChange={setSenha}
+                                    defaultValue=""
+                                    onChange={({target}) => setSenha(target.value)}
                                     type="password"
                                     size="small"
                                     margin="dense"
@@ -227,7 +228,8 @@ export const CadastroUsuario = () => {
                                     required
                                     id="outlined-required"
                                     label="Confirmar senha"
-                                    onChange={setSenhaConfirmada}
+                                    defaultValue=""
+                                    onChange={({target}) => setSenhaConfirmada(target.value)}
                                     type="password"
                                     size="small"
                                     margin="dense"
@@ -237,7 +239,7 @@ export const CadastroUsuario = () => {
                         
                     </>) : null
                 }
-                {usuario.tipo == 3 || login.tipo == '3' ? 
+                {usuario.tipo == "cliente" ? 
                     (
                     <>
                         <Row>
@@ -247,8 +249,8 @@ export const CadastroUsuario = () => {
                                     required
                                     id="outlined-required"
                                     label="Nome completo"
-                                    defaultValue=""
-                                    onChange={setNome}
+                                    defaultValue={usuario.nome}
+                                    onChange={({target}) => setNome(target.value)}
                                     size="small"
                                     margin="dense"
                                 />
@@ -261,7 +263,8 @@ export const CadastroUsuario = () => {
                                     required
                                     id="outlined-required"
                                     label="Email"
-                                    onChange={setEmail}
+                                    defaultValue={usuario.email}
+                                    onChange={({target}) => setEmail(target.value)}
                                     type="email"
                                     size="small"
                                     margin="dense"
@@ -275,7 +278,8 @@ export const CadastroUsuario = () => {
                                     required
                                     id="outlined-required"
                                     label="Senha"
-                                    onChange={setSenha}
+                                    defaultValue=""
+                                    onChange={({target}) => setSenha(target.value)}
                                     type="password"
                                     size="small"
                                     margin="dense"
@@ -289,7 +293,8 @@ export const CadastroUsuario = () => {
                                     required
                                     id="outlined-required"
                                     label="Confirmar senha"
-                                    onChange={setSenhaConfirmada}
+                                    defaultValue=""
+                                    onChange={({target}) => setSenhaConfirmada(target.value)}
                                     type="password"
                                     size="small"
                                     margin="dense"
@@ -304,16 +309,16 @@ export const CadastroUsuario = () => {
                     (
                         <Row>
                             <Col lg={6} md={6} sm={6}>
-                                {/* <Link to=".."> */}
+                                <Link to="..">
                                     <Button variant="contained">
                                         Anterior
                                     </Button>
-                                {/* </Link> */}
+                                </Link>
                             </Col>
                             <Col lg={6} md={6} sm={6}>
                                 <div style={{ textAlign: 'right' }}>
-                                    <Button variant="contained">
-                                        Próxima
+                                    <Button variant="contained" onClick={submeterUsuario}>
+                                        Cadastrar
                                     </Button>
                                 </div>
                             </Col>

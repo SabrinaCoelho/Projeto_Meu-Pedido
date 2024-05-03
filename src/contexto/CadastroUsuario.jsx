@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { tipoUsuario } from '../TipoUsuarioEnum';
+import axios from 'axios';
 
 const usuarioInicial = {
     id: '',
@@ -16,10 +17,13 @@ const usuarioInicial = {
     informacoes: ''
 }
 
+export const useCadastroUsuarioContext = () => {
+    return useContext(CadastroUsuarioContext);
+}
+
 export const CadastroUsuarioContext = createContext({
     usuario: usuarioInicial,
     erros: {},
-    setId: () => null,
     setTipo: () => null,
     setNome: () => null,
     setEmail: () => null,
@@ -34,20 +38,15 @@ export const CadastroUsuarioContext = createContext({
     possoSelecionarInteresse: () => null
 })
 
-export const useCadastroUsuarioContext = () => {
-    return useContext(CadastroUsuarioContext);
-}
 
 export const CadastroUsuarioProvider = ({ children }) => {
 
-    //const navegar = useNavigate()
+    const navegar = useNavigate()
 
     const [usuario, setUsuario] = useState(usuarioInicial)
 
 
     const setId = (id) => {
-        console.log("***********")
-        console.log(id)
         setUsuario(estadoAnterior => {
             return {
                 ...estadoAnterior,
@@ -57,8 +56,7 @@ export const CadastroUsuarioProvider = ({ children }) => {
     }
     
     const setTipo = (tipo) => {
-        console.log("***********")
-        console.log(tipo)
+        console.log("----------------", tipo)
         setUsuario(estadoAnterior => {
             return {
                 ...estadoAnterior,
@@ -142,6 +140,22 @@ export const CadastroUsuarioProvider = ({ children }) => {
     const submeterUsuario = () => {
         
         console.log(usuario)
+        axios.post("http://localhost:3001/usuarios", {usuario})
+            .then(
+                res => {
+                    console.log("OK, CHAOS!")
+                    console.log(res);
+                    if(res){
+                        navegar("/login")
+                    }
+                }
+            )
+            .catch(err => {//TODO
+                console.log("NAO deu certo")
+            }
+
+        )
+
         //navegar('/cadastro/concluido')
     }
 
@@ -151,7 +165,6 @@ export const CadastroUsuarioProvider = ({ children }) => {
 
     const contexto = {
         usuario,
-        setId,
         setTipo,
         setNome,
         setEndereco,

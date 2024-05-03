@@ -54,6 +54,7 @@ export const LayoutBasePerfil = () => {
     } = useLoginContext()
     
     const { 
+        usuario,
         setNome, 
         setTelefone,
         setRestauranteId,
@@ -72,10 +73,12 @@ export const LayoutBasePerfil = () => {
             .then(
                 res => {
                     console.log("OK, CHAOS!")
-                    console.log(res);
+                    console.log(res.data);
                     if(res){
+                        console.log(res.data.nome)
                         setNome(res.data.nome);
                         setEmail(res.data.email);
+                        console.log(usuario)
                     }
                 }
             )
@@ -88,7 +91,7 @@ export const LayoutBasePerfil = () => {
     )
 
     let itens = []
-    if(login.tipo == '1'){
+    if(usuario.tipo == "restaurante"){
         itens = [
             {
                 texto: "Atualizar cadastro",
@@ -115,7 +118,7 @@ export const LayoutBasePerfil = () => {
                 link: "/perfil/pedidos"
             },
         ]
-    }else if(login.tipo == '2'){
+    }else if(usuario.tipo == "atendente"){
         itens = [
             {
                 texto: "Atualizar cadastro",
@@ -134,7 +137,7 @@ export const LayoutBasePerfil = () => {
                 link: "/perfil/comandas-em-andamento"
             },
         ]
-    }else{
+    }else{//cliente
         itens = [
             {
                 texto: "Atualizar cadastro",

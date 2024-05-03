@@ -3,10 +3,12 @@ import { CampoTexto } from "../../componentes/CampoTexto/CampoTexto"
 import { useAtendimentoContext } from "../../contexto/Atendimento"
 import { Botao } from "../../componentes/Botao/Botao"
 import { TextField, Button } from '@mui/material';
+import { useComandaContext } from "../../contexto/Comanda";
+import { useLoginContext } from "../../contexto/Login";
 
 export const Atendimento = () => {
 
-    const {
+    /* const {
         atendimento,
         setCliente,
         setMesa,
@@ -16,11 +18,33 @@ export const Atendimento = () => {
     const entrar = (event) => {
         event.preventDefault();
         console.log(atendimento)
+    } */
+    const {
+        login
+    } = useLoginContext();
+    const {
+        comanda,
+        setErros,
+        setAtendente,
+        setCliente,
+        setMesa,
+        setComandaID,
+        setInicio,
+        setTermino,
+        submeterComanda
+    } = useComandaContext()
+
+    const iniciar = (event) => {//preciso do id do restaurante
+        event.preventDefault();
+        const dataInicio = new Date();
+        setInicio(dataInicio);
+        setAtendente(login.email)
+        submeterComanda()
     }
     
     return (
         <Container style={{margin: "80px"}}>
-            <form onSubmit={entrar}>
+            <form onSubmit={iniciar}>
                 <Row justify="center" >
                     <Col xxxl={4} xxl={4} xl={4} lg={4} md={8} sm={12}>
                         <Row>
@@ -30,7 +54,7 @@ export const Atendimento = () => {
                                     required
                                     id="outlined-required"
                                     label="Cliente"
-                                    onChange={setCliente}
+                                    onChange={({target}) => setCliente(target.value)}
                                     type="text"
                                     size="small"
                                     margin="dense"
@@ -44,7 +68,7 @@ export const Atendimento = () => {
                                     required
                                     id="outlined-required"
                                     label="Mesa"
-                                    onChange={setMesa}
+                                    onChange={({target}) => setMesa(target.value)}
                                     type="text"
                                     size="small"
                                     margin="dense"
@@ -58,7 +82,7 @@ export const Atendimento = () => {
                                     required
                                     id="outlined-required"
                                     label="Comanda"
-                                    onChange={setComanda}
+                                    onChange={({target}) => setComandaID(target.value)}
                                     type="text"
                                     size="small"
                                     margin="dense"
@@ -66,8 +90,8 @@ export const Atendimento = () => {
                             </Col>
                         </Row>
                         <Row justify="center">
-                            <Button variant="contained" >
-                                Entrar
+                            <Button variant="contained" type="submit">
+                                Iniciar
                             </Button>
                         </Row>
                     </Col>

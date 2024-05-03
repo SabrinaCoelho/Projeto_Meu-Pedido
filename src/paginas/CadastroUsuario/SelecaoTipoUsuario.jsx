@@ -5,19 +5,19 @@ import { Col, Row } from "react-grid-system"
 import { Botao } from "../../componentes/Botao/Botao"
 import { Link } from "../../componentes/Link/Link"
 import { Link as RouterLink } from "react-router-dom"
-import { Typography } from "@mui/material"
+import { Typography, Button } from "@mui/material"
 
 const opcoes = [
     {
-        valor: 1,
+        valor: "restaurante",
         label: 'Restaurante',
     },
     {
-        valor: 2,
+        valor: "atendente",
         label: 'Atendente',
     },
     {
-        valor: 3,
+        valor: "cliente",
         label: 'Cliente',
     }
 ]
@@ -44,22 +44,17 @@ export const SelecaoTipoUsuario = () => {
                 <Row>
                     <Col lg={6} md={6} sm={6}>
                         <RouterLink to="/cadastro/tipo-usuario">
-                            <Botao variante="secundaria">
+                            <Button >
                                 Anterior
-                            </Botao>
+                            </Button>
                         </RouterLink>
                     </Col>
                     <Col lg={6} md={6} sm={6}>
                         <div style={{ textAlign: 'right' }}>
                             <RouterLink to='/cadastro/dados-usuario'>
-                                <Botao>
+                                <Button>
                                     Próxima
-                                </Botao>
-                            </RouterLink>
-                            <RouterLink to='/perfil/atualizar-dados'>
-                                <Botao>
-                                    a
-                                </Botao>
+                                </Button>
                             </RouterLink>
                         </div>
                     </Col>

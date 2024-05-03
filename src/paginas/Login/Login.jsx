@@ -15,7 +15,6 @@ export const Login = () => {
         setEmail,
         setSenha
     } = useLoginContext()
-    const [carregando, setCarregando] = useState(false)
 
     const entrar = (event) => {
         event.preventDefault();

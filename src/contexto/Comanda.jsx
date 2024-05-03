@@ -1,7 +1,8 @@
+import axios from 'axios';
 import { createContext, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const comandaInicial = {
+/* const comandaInicial = {
     atendente: 'Rohan',
     erros: {},
     cliente: 'Josuke',
@@ -9,6 +10,16 @@ const comandaInicial = {
     comandaID: '1234',
     inicio: '10:45:56',
     termino: ''
+} */
+const comandaInicial = {
+    atendente: '',
+    erros: {},
+    cliente: '',
+    mesa: '',
+    comandaID: '',
+    inicio: '',
+    termino: '',
+    pedidos: []
 }
 
 export const ComandaContext = createContext({
@@ -20,6 +31,8 @@ export const ComandaContext = createContext({
     setComandaID: () => null,
     setInicio: () => null,
     setTermino: () => null,
+    setStatus: () => null,
+    setPedidos: () => null
 })
 
 export const useComandaContext = () => {
@@ -50,6 +63,7 @@ export const ComandaProvider = ({ children }) => {
         })
     }
     const setCliente = (cliente) => {
+        console.log(cliente)
         setComanda(estadoAnterior => {
             return {
                 ...estadoAnterior,
@@ -90,12 +104,40 @@ export const ComandaProvider = ({ children }) => {
             }
         })
     }
+    const setStatus = (status) => {//fechou (tem o termino lá) mas foi pago?
+        setComanda(estadoAnterior => {
+            return {
+                ...estadoAnterior,
+                status
+            }
+        })
+    }
+    const setPedidos = (pedidos) => {
+        setComanda(estadoAnterior => {
+            return {
+                ...estadoAnterior,
+                pedidos
+            }
+        })
+    }
     
 
     const submeterComanda = () => {
         
         console.log(comanda)
-        //navegar('/cadastro/concluido')
+        axios.post("http://localhost:3001/comanda", {comanda})
+            .then(
+                res => {
+                    console.log("OK, CHAOS!")
+                    console.log(res);
+                    
+                }
+            )
+            .catch(err => {//TODO
+                console.log("NAO deu certo")
+            }
+
+        )
     }
 
     /* const possoSelecionarInteresse = () => {
@@ -111,6 +153,8 @@ export const ComandaProvider = ({ children }) => {
         setComandaID,
         setInicio,
         setTermino,
+        setPedidos,
+        setStatus,
         submeterComanda
     }
 

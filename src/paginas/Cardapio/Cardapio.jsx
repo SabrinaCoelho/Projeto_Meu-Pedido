@@ -123,18 +123,21 @@ export const Cardapio = () => {
         </Container>
     )
 } */
-import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import MuiAccordion from '@mui/material/Accordion';
 import MuiAccordionSummary from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
-import { Box, ListItem, List, ListItemText, ListDivider, Divider, Button } from '@mui/material';
+import { Box, TextField, ListItem, List, ListItemText, ListDivider, Divider, Button } from '@mui/material';
 import ListItemIcon from '@mui/icons-material/Inbox';
 import ListItemButton from '@mui/icons-material/Inbox';
 import DraftsIcon from '@mui/icons-material/Drafts';
 import { Container, Col, Row } from "react-grid-system"
+import { useProdutoContext } from "../../contexto/Produto"
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { GrupoRadio } from '../../componentes/Radio/GrupoRadio';
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -173,29 +176,76 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 export const Cardapio = () => {
-  const [expanded, setExpanded] = React.useState('panel1');
+    const {
+        produto,
+        setNome,
+        setDescricao,
+        setPreco,
+        setCategoria,
+        submeterProduto
+    } = useProdutoContext();
+    const [expanded, setExpanded] = useState('panel1');
+    const [carregando, setCarregando] = useState(true)
+    const [cardapio, setCardapio] = useState([])
 
-  const handleChange = (panel) => (event, newExpanded) => {
-    setExpanded(newExpanded ? panel : false);
-  };
+    useEffect(
+        () => {
+            axios.get("http://localhost:3001/produtos")
+            .then(
+                res => {
+                    console.log("OK, CHAOS!")
+                    console.log(res.data);
+                    setCardapio(res.data);
+                    setCarregando(false)
+                }
+            )
+            .catch(err => {//TODO
+                console.log("NAO deu certo")
+                setCarregando(false)
+            }
 
-  const cardapio = [
+            ) 
+        }, [carregando]
+    )
+
+    const handleChange = (panel) => (event, newExpanded) => {
+        setExpanded(newExpanded ? panel : false);
+    };
+    const opcoes = [
         {
-            nome: "Bolo de laranja",
-            descricao: "Bolo de laranja. Contém glútem, derivados de leite, ovos, e laranja.",
-            preco: "25,00",
-            ativo: "true"
+            valor: "doce",
+            label: 'Doce',
         },
         {
-            nome: "Suco de laranja 400ml",
-            descricao: "Contém laranja.",
-            preco: "5,00",
-            ativo: "true"
+            valor: "salgado",
+            label: 'Salgado',
+        },
+        {
+            valor: "bebida",
+            label: 'Bebida',
         }
     ]
 
+    const submeter = (event) => {
+        event.preventDefault()
+        console.log(produto)
+        submeterProduto(produto)
+        axios.post("http://localhost:3001/produtos", {produto})
+            .then(
+                res => {
+                    console.log("OK, CHAOS!")
+                    console.log(res);
+                }
+            )
+            .catch(err => {//TODO
+                console.log("NAO deu certo")
+            }
+
+        )
+    }
+
   return (
-    <div>
+    <Container>
       <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
         <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
           <Typography>Salgados</Typography>
@@ -204,47 +254,50 @@ export const Cardapio = () => {
             <List>
                 {
                     cardapio.map(
-                        (item, i) => (
-                            <>
-                                <ListItem disablePadding key={i}>
-                                    <ListItemText 
-                                        primary={item.nome}
-                                        secondary={
-                                            <div>
-                                                <Row>
-                                                    <Col xxxl={8} xxl={8} xl={8} lg={8} md={12} sm={12}>
-                                                        <Typography
-                                                            sx={{ display: 'inline' }}
-                                                            component="span"
-                                                            variant="body"
-                                                            color="text.primary"
-                                                        >
-                                                            {item.descricao}
-                                                        </Typography>
-                                                    </Col>
-                                                    <Col xxxl={4} xxl={4} xl={4} lg={4} md={12} sm={12} textAlign="right">
-                                                        <Typography
-                                                            sx={{ textAlign: "end" }}
-                                                            component="p"
-                                                            variant="body"
-                                                            color="text.primary"
-                                                        >
-                                                            R${item.preco}
-                                                        </Typography>
-                                                    </Col>
-                                                </Row>
-                                                <Box component="div" sx={{ my: 2, display: "flex", justifyContent: "right" }}>
-                                                    <Button variant="outlined" size="small">
-                                                        Pedir
-                                                    </Button>
-                                                </Box>
-                                            </div>
-                                        }
-                                        />
-                                    </ListItem>
-                                <Divider/>
-                            </>
-                        )
+                        (item, i) => {
+                            if(item.categoria == "salgado"){
+                                return(<>
+                                            <ListItem disablePadding key={i}>
+                                                <ListItemText 
+                                                    primary={item.nome}
+                                                    secondary={
+                                                        <div>
+                                                            <Row>
+                                                                <Col xxxl={8} xxl={8} xl={8} lg={8} md={12} sm={12}>
+                                                                    <Typography
+                                                                        sx={{ display: 'inline' }}
+                                                                        component="span"
+                                                                        variant="body"
+                                                                        color="text.primary"
+                                                                    >
+                                                                        {item.descricao}
+                                                                    </Typography>
+                                                                </Col>
+                                                                <Col xxxl={4} xxl={4} xl={4} lg={4} md={12} sm={12} textAlign="right">
+                                                                    <Typography
+                                                                        sx={{ textAlign: "end" }}
+                                                                        component="p"
+                                                                        variant="body"
+                                                                        color="text.primary"
+                                                                    >
+                                                                        R${item.preco}
+                                                                    </Typography>
+                                                                </Col>
+                                                            </Row>
+                                                            <Box component="div" sx={{ my: 2, display: "flex", justifyContent: "right" }}>
+                                                                <Button variant="outlined" size="small">
+                                                                    Pedir
+                                                                </Button>
+                                                            </Box>
+                                                        </div>
+                                                    }
+                                                    />
+                                                </ListItem>
+                                            <Divider/>
+                                        </>
+                                )
+                            }
+                        }
                     )
                 }
             </List>
@@ -255,12 +308,54 @@ export const Cardapio = () => {
           <Typography>Doces</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget. Lorem ipsum dolor
-            sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-            sit amet blandit leo lobortis eget.
-          </Typography>
+        <List>
+                {
+                    cardapio.map(
+                        (item, i) => item.categoria == "doce" ?
+                                (   <>
+                                        <ListItem disablePadding key={i}>
+                                            <ListItemText 
+                                                primary={item.nome}
+                                                secondary={
+                                                    <div>
+                                                        <Row>
+                                                            <Col xxxl={8} xxl={8} xl={8} lg={8} md={12} sm={12}>
+                                                                <Typography
+                                                                    sx={{ display: 'inline' }}
+                                                                    component="span"
+                                                                    variant="body"
+                                                                    color="text.primary"
+                                                                >
+                                                                    {item.descricao}
+                                                                </Typography>
+                                                            </Col>
+                                                            <Col xxxl={4} xxl={4} xl={4} lg={4} md={12} sm={12} textAlign="right">
+                                                                <Typography
+                                                                    sx={{ textAlign: "end" }}
+                                                                    component="p"
+                                                                    variant="body"
+                                                                    color="text.primary"
+                                                                >
+                                                                    R${item.preco}
+                                                                </Typography>
+                                                            </Col>
+                                                        </Row>
+                                                        <Box component="div" sx={{ my: 2, display: "flex", justifyContent: "right" }}>
+                                                            <Button variant="outlined" size="small">
+                                                                Pedir
+                                                            </Button>
+                                                        </Box>
+                                                    </div>
+                                                }
+                                                />
+                                            </ListItem>
+                                        <Divider/>
+                                    </>
+                            ): null
+                        
+                    )
+                }
+            </List>
         </AccordionDetails>
       </Accordion>
       <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
@@ -268,14 +363,120 @@ export const Cardapio = () => {
           <Typography>Bebidas</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget. Lorem ipsum dolor
-            sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-            sit amet blandit leo lobortis eget.
-          </Typography>
+        <List>
+                {
+                    cardapio.map(
+                        (item, i) => {
+                            if(item.categoria == "bebida"){
+                                return(<>
+                                            <ListItem disablePadding key={i}>
+                                                <ListItemText 
+                                                    primary={item.nome}
+                                                    secondary={
+                                                        <div>
+                                                            <Row>
+                                                                <Col xxxl={8} xxl={8} xl={8} lg={8} md={12} sm={12}>
+                                                                    <Typography
+                                                                        sx={{ display: 'inline' }}
+                                                                        component="span"
+                                                                        variant="body"
+                                                                        color="text.primary"
+                                                                    >
+                                                                        {item.descricao}
+                                                                    </Typography>
+                                                                </Col>
+                                                                <Col xxxl={4} xxl={4} xl={4} lg={4} md={12} sm={12} textAlign="right">
+                                                                    <Typography
+                                                                        sx={{ textAlign: "end" }}
+                                                                        component="p"
+                                                                        variant="body"
+                                                                        color="text.primary"
+                                                                    >
+                                                                        R${item.preco}
+                                                                    </Typography>
+                                                                </Col>
+                                                            </Row>
+                                                            <Box component="div" sx={{ my: 2, display: "flex", justifyContent: "right" }}>
+                                                                <Button variant="outlined" size="small">
+                                                                    Pedir
+                                                                </Button>
+                                                            </Box>
+                                                        </div>
+                                                    }
+                                                    />
+                                                </ListItem>
+                                            <Divider/>
+                                        </>
+                                )
+                            }else{
+                                return(
+                                    <Typography variant="h5" component="h1">
+                                        Nenhum registro encontrado.
+                                    </Typography>
+                                )
+                            }
+                        }
+                    )
+                }
+            </List>
         </AccordionDetails>
-      </Accordion>
-    </div>
+        </Accordion>
+        <form style={{margin: "1.2rem 0"}} onSubmit={submeter}>
+            <Row>
+                <Typography variant='h3' component="h1">
+                    Adicionar
+                </Typography>
+            </Row>
+            <Row>
+                <Col>
+                    <TextField
+                        fullWidth
+                        required
+                        id="outlined-required"
+                        label="Nome"
+                        defaultValue={produto.nome}
+                        onChange={({target}) => setNome(target.value)}
+                        size="small"
+                        margin="dense"
+                    />
+                    <TextField
+                        fullWidth
+                        required
+                        id="outlined-required"
+                        label="Descrição"
+                        defaultValue={produto.descricao}
+                        onChange={({target}) => setDescricao(target.value)}
+                        size="small"
+                        multiline
+                        rows={4}
+                        margin="dense"
+                    />
+                </Col>
+                <Col>
+                    <TextField
+                        fullWidth
+                        required
+                        id="outlined-required"
+                        label="Preço"
+                        defaultValue={produto.preco}
+                        onChange={({target}) => setPreco(target.value)}
+                        size="small"
+                        margin="dense"
+                    />
+                    <GrupoRadio 
+                        opcoes={opcoes}  
+                        onChange={setCategoria} 
+                    />
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Button variant="contained" type='submit'>
+                        Adicionar
+                    </Button>
+                </Col>
+            </Row>
+        </form>
+    </Container>
   );
 }

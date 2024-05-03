@@ -2,10 +2,11 @@ import { Container, Col, Row } from "react-grid-system"
 import { CampoTexto } from "../../componentes/CampoTexto/CampoTexto"
 import { Botao } from "../../componentes/Botao/Botao"
 import { TextField, Button } from "@mui/material"
+import { useComandaContext } from "../../contexto/Comanda"
 
 export const AcessoComandaDigital = () => {
 
-    /* const {
+    const {
         comanda,
         setErros,
         setAtendente,
@@ -20,7 +21,7 @@ export const AcessoComandaDigital = () => {
     const iniciar = (event) => {
         event.preventDefault();
         console.log(comanda)
-    } */
+    }
     
     return (
         <Container>
@@ -34,7 +35,7 @@ export const AcessoComandaDigital = () => {
                                     required
                                     id="outlined-required"
                                     label="Digite o n° da comanda"
-                                    onChange={null}
+                                    onChange={({target}) => setComandaID(target.value)}
                                     type="number"
                                     size="small"
                                     margin="dense"

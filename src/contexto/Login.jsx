@@ -7,10 +7,6 @@ const LoginInicial = {
     tipo: '1'
 }
 
-export const useLoginContext = () => {
-    return useContext(LoginContext);
-}
-
 export const LoginContext = createContext({
     login: LoginInicial,
     erros: {},
@@ -18,6 +14,10 @@ export const LoginContext = createContext({
     setSenha: () => null,
     setTipo: () => null
 })
+
+export const useLoginContext = () => {
+    return useContext(LoginContext);
+}
 
 export const LoginProvider = ({ children }) => {
 

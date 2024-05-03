@@ -137,9 +137,9 @@ export const Cabecalho = () => {
                     </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {pages.map((page, i) => (
-                        <Link to={page.linkPag}>
+                        <Link to={page.linkPag} key={i}>
                             <Button
-                                key={i}
+                                
                                 onClick={handleCloseNavMenu}
                                 sx={{ my: 2, color: 'white', display: 'block' }}
                             >

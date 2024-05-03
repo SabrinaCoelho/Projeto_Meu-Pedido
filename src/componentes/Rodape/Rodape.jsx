@@ -18,13 +18,13 @@ export const Rodape = () => {
                 bgcolor: 'primary.main',
             }}
         >
-            <Container>
-                <Row justify="center">
-                    <Typography variant="subtitle1" component="subtitle1">
+            {/* <Container>
+                <Row justify="center"> */}
+                    {/* <Typography variant="subtitle1" component="subtitle1">
                         2024
-                    </Typography>
-                </Row>
-            </Container>
+                    </Typography> */}
+                {/* </Row>
+            </Container> */}
         </Box>
     )
 }

@@ -81,7 +81,7 @@ export const router = createBrowserRouter([
                         path: "cadastro",
                         children: [
                             {
-                                path: "tipo-usuario",
+                                path: "",
                                 element: <SelecaoTipoUsuario/>
                             },
                             {

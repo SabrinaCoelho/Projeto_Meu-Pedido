@@ -1,5 +1,7 @@
 import { CadastroUsuarioProvider } from "../contexto/CadastroUsuario"
 import { LoginProvider } from "../contexto/Login"
+import { ProdtutoProvider } from "../contexto/Produto"
+import { ComandaProvider } from "../contexto/Comanda"
 import { Outlet } from "react-router-dom"
 
 export const LayoutProviders = () => {
@@ -7,7 +9,11 @@ export const LayoutProviders = () => {
         <>
             <CadastroUsuarioProvider>
                 <LoginProvider>
-                    <Outlet/>
+                    <ProdtutoProvider>
+                        <ComandaProvider>
+                            <Outlet/>
+                        </ComandaProvider>
+                    </ProdtutoProvider>
                 </LoginProvider>
             </CadastroUsuarioProvider>
         </>
