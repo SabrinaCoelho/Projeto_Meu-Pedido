@@ -33,6 +33,10 @@ const pages = [
     {
         linkPag: "/acesso-comanda-digital",
         nomePag: 'Comanda digital'
+    },
+    {
+        linkPag: "/restaurantes",
+        nomePag: 'Restaurantes'
     }
 ];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];

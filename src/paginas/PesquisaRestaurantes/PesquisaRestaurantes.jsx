@@ -75,10 +75,13 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { PerfilPublico } from '../../componentes/PerfilPublico/PerfilPublico';
 
 export const PesquisarRestaurantes = () => {
     const [pesquisa, setPesquisa] = useState([])
     const [carregando, setCarregando] = useState(true)
+    const [inputValue, setInputValue] = useState('');
+    const [restauranteDados, setRestauranteDados] = useState({});
 
     useEffect(
         () => {
@@ -99,14 +102,44 @@ export const PesquisarRestaurantes = () => {
             )
         },[carregando]
     )
+    useEffect(
+        () => {
+            axios.get("http://localhost:3001/restaurantes/"+inputValue, {})
+                .then(
+                    res => {
+                        console.log("OK, CHAOS!")
+                        console.log(res.data._id);
+                        setRestauranteDados(res.data)
+                    }
+                )
+                .catch(err => {//TODO
+                    setCarregando(false)
+                    console.log("NAO deu certo")
+                }
+
+            )
+        },[inputValue]
+    )
     
   return (
-    <Autocomplete
-      disablePortal
-      id="combo-box-demo"
-      options={pesquisa}
-      sx={{ width: 300 }}
-      renderInput={(params) => <TextField {...params} label="Restaurante" />}
-    />
+    <>
+        <div>{`inputValue: '${inputValue}'`}</div>
+        <Autocomplete
+            size="small"
+            margin="dense"
+            disablePortal
+            inputValue={inputValue}
+            onInputChange={(event, newInputValue) => {
+                setInputValue(newInputValue);
+            }}
+            id="combo-box-demo"
+            options={pesquisa}
+            renderInput={(params) => <TextField {...params} label="Restaurante"
+            />}
+        />
+        {
+            Object.keys(restauranteDados).length ? (<PerfilPublico restauranteDados={restauranteDados}/>) : (<></>)
+        }
+    </>
   );
 }

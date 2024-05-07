@@ -175,7 +175,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   borderTop: '1px solid rgba(0, 0, 0, .125)',
 }));
 
-export const Cardapio = () => {
+export const Cardapio = ({restauranteId}) => {
     const {
         produto,
         setNome,
@@ -187,14 +187,16 @@ export const Cardapio = () => {
     const [expanded, setExpanded] = useState('panel1');
     const [carregando, setCarregando] = useState(true)
     const [cardapio, setCardapio] = useState([])
+    const [ pedidos, setPedidos ] = useState([]);
 
     useEffect(
         () => {
-            axios.get("http://localhost:3001/produtos")
+            axios.get("http://localhost:3001/produtos/"+restauranteId, {})
             .then(
                 res => {
                     console.log("OK, CHAOS!")
                     console.log(res.data);
+                    console.log("************")
                     setCardapio(res.data);
                     setCarregando(false)
                 }
@@ -230,7 +232,7 @@ export const Cardapio = () => {
         event.preventDefault()
         console.log(produto)
         submeterProduto(produto)
-        axios.post("http://localhost:3001/produtos", {produto})
+        axios.post("http://localhost:3001/produtos/"+restauranteId, {produto})
             .then(
                 res => {
                     console.log("OK, CHAOS!")
@@ -285,9 +287,75 @@ export const Cardapio = () => {
                                                                 </Col>
                                                             </Row>
                                                             <Box component="div" sx={{ my: 2, display: "flex", justifyContent: "right" }}>
-                                                                <Button variant="outlined" size="small">
-                                                                    Pedir
-                                                                </Button>
+                                                            <TextField
+                                                                fullWidth
+                                                                required
+                                                                id="outlined-required"
+                                                                label="Un"
+                                                                defaultValue={0}
+                                                                onChange={({target}) => {
+                                                                    for(let j = 0; j < cardapio.length; j++){
+                                                                        //Encontra index do prod a alterar
+                                                                        if(cardapio[j]._id === item._id){
+                                                                            //add prop
+                                                                            cardapio[j].un = target.value
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                    setCardapio(cardapio);
+                                                                }}
+                                                                type="number"
+                                                                size="small"
+                                                                margin="dense"
+                                                            />
+                                                                {
+                                                                    item && item?.selecionado ? 
+                                                                    (<Button variant="outlined" size="small" onClick={
+                                                                        () => {
+                                                                            //encontra o INDICE do objeto
+                                                                            let encontrado;
+                                                                            for(let i = 0; i < pedidos.length; i++){
+                                                                                if(pedidos[i]._id === item._id){
+                                                                                    encontrado = i;
+                                                                                    console.log(cardapio[i])
+                                                                                    break;
+                                                                                }
+                                                                            }
+                                                                            console.log(encontrado)
+                                                                            //remove
+                                                                            pedidos.splice(encontrado, 1)
+                                                                            //atualiza
+                                                                            for(let j = 0; j < cardapio.length; j++){
+                                                                                //Encontra index do prod a alterar
+                                                                                if(cardapio[j]._id === item._id){
+                                                                                    cardapio[j].selecionado = false
+                                                                                    break;
+                                                                                }
+                                                                            }
+                                                                            setCardapio(cardapio);
+                                                                            setPedidos([...pedidos])
+                                                                        }
+                                                                        }>
+                                                                        Cancelar
+                                                                    </Button>):
+                                                                    (
+                                                                        <Button variant="outlined" size="small" onClick={
+                                                                            () => {
+                                                                                setPedidos([...pedidos, item])
+                                                                                for(let j = 0; j < cardapio.length; j++){
+                                                                                    //Encontra index do prod a alterar
+                                                                                    if(cardapio[j]._id === item._id){
+                                                                                        cardapio[j].selecionado = true
+                                                                                        break;
+                                                                                    }
+                                                                                }
+                                                                                setCardapio(cardapio);
+                                                                            }
+                                                                            }>
+                                                                            Pedir
+                                                                        </Button>
+                                                                    )
+                                                                }
                                                             </Box>
                                                         </div>
                                                     }
@@ -341,7 +409,29 @@ export const Cardapio = () => {
                                                             </Col>
                                                         </Row>
                                                         <Box component="div" sx={{ my: 2, display: "flex", justifyContent: "right" }}>
-                                                            <Button variant="outlined" size="small">
+                                                        <TextField
+                                                                fullWidth
+                                                                required
+                                                                id="outlined-required"
+                                                                label="Un"
+                                                                defaultValue={0}
+                                                                onChange={({target}) => {
+                                                                    for(let j = 0; j < cardapio.length; j++){
+                                                                        //Encontra index do prod a alterar
+                                                                        if(cardapio[j]._id == item._id){
+                                                                            //add prop
+                                                                            cardapio[j].un = target.value
+                                                                            console.log(j)
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                    setCardapio(cardapio);
+                                                                }}
+                                                                type="number"
+                                                                size="small"
+                                                                margin="dense"
+                                                            />
+                                                            <Button variant="outlined" size="small" onClick={() => console.log(item)}>
                                                                 Pedir
                                                             </Button>
                                                         </Box>
@@ -397,6 +487,28 @@ export const Cardapio = () => {
                                                                 </Col>
                                                             </Row>
                                                             <Box component="div" sx={{ my: 2, display: "flex", justifyContent: "right" }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    required
+                                                                    id="outlined-required"
+                                                                    label="Un"
+                                                                    defaultValue={0}
+                                                                    onChange={({target}) => {
+                                                                        for(let j = 0; j < cardapio.length; j++){
+                                                                            //Encontra index do prod a alterar
+                                                                            if(cardapio[j]._id == item._id){
+                                                                                //add prop
+                                                                                cardapio[j].un = target.value
+                                                                                console.log(j)
+                                                                                break;
+                                                                            }
+                                                                        }
+                                                                        setCardapio(cardapio);
+                                                                    }}
+                                                                    type="number"
+                                                                    size="small"
+                                                                    margin="dense"
+                                                                />
                                                                 <Button variant="outlined" size="small">
                                                                     Pedir
                                                                 </Button>
@@ -421,7 +533,18 @@ export const Cardapio = () => {
             </List>
         </AccordionDetails>
         </Accordion>
-        <form style={{margin: "1.2rem 0"}} onSubmit={submeter}>
+        <div>
+            {
+                pedidos.map(
+                    e => (
+                        <Typography variant="body" component="body">
+                            {e.nome}
+                        </Typography>
+                    )
+                )
+            }
+        </div>
+        {/* <form style={{margin: "1.2rem 0"}} onSubmit={submeter}>
             <Row>
                 <Typography variant='h3' component="h1">
                     Adicionar
@@ -476,7 +599,7 @@ export const Cardapio = () => {
                     </Button>
                 </Col>
             </Row>
-        </form>
+        </form> */}
     </Container>
   );
 }

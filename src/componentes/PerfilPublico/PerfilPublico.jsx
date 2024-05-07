@@ -1,8 +1,9 @@
-import { Container } from "react-grid-system"
+import { Container, Row, Col } from "react-grid-system"
 import { useCadastroUsuarioContext } from "../../contexto/CadastroUsuario"
 import { Typography } from "@mui/material"
+import { Cardapio } from "../../paginas/Cardapio/Cardapio"
 
-export const CadastroUsuario = () => {
+export const PerfilPublico = ({restauranteDados}) => {
 
     const { 
         usuario, 
@@ -24,27 +25,28 @@ export const CadastroUsuario = () => {
         <Container>
             <Row>
                 <Col>
-                <Typography variant="h4" component="h1">
-                    {usuario.nome}
-                </Typography>
+                    <Typography variant="h4" component="h1">
+                        {restauranteDados.nome}
+                    </Typography>
                 </Col>
             </Row>
             <Row>
                 <Col>
                     <Typography variant="body" component="body">
-                        {usuario.endereco}
+                        {restauranteDados.nome}
                     </Typography>
                     <Typography variant="body" component="body">
-                        {usuario.email}
+                        {restauranteDados.email}
                     </Typography>
                     <Typography variant="body" component="body">
-                        {usuario.cnpj}
+                        {restauranteDados.cpf}
                     </Typography>
                     <Typography variant="body" component="body">
-                        {usuario.telefone}
+                        {restauranteDados.endereco}
                     </Typography>
                 </Col>
             </Row>
+            <Cardapio restauranteId={restauranteDados._id}/>
         </Container>
     )
 }
