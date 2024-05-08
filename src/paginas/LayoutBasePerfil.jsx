@@ -157,7 +157,7 @@ export const LayoutBasePerfil = () => {
             },
             {
                 texto: "Comanda digital",
-                link: "/perfil/comanda-digital"
+                link: "/perfil/acesso-comanda-digital"
             },
         ]
     }

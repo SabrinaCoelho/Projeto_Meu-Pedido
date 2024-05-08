@@ -228,7 +228,35 @@ export const Cardapio = ({restauranteId}) => {
         }
     ]
 
-    const submeter = (event) => {
+    const submeterPedido = (event) => {
+        //preciso do id da comanda
+            // SOL1: um select com as comandas abertas e selecionar?
+            // SOL2: como só há uma comanda, a pessoa deve digitar o numero da comanda
+        pedidos.map(
+            e => {
+                delete e.selecionado
+                delete e._id
+                delete e.restauranteId
+                delete e.avaliacao
+                return e
+            }
+        )
+        console.log(pedidos)
+        submeterProduto(produto)
+        axios.post("http://localhost:3001/pedidos", {pedidos})
+            .then(
+                res => {
+                    console.log("OK, CHAOS!")
+                    console.log(res);
+                }
+            )
+            .catch(err => {//TODO
+                console.log("NAO deu certo")
+            }
+
+        )
+    }
+    /* const submeter = (event) => {
         event.preventDefault()
         console.log(produto)
         submeterProduto(produto)
@@ -244,10 +272,10 @@ export const Cardapio = ({restauranteId}) => {
             }
 
         )
-    }
+    } */
 
   return (
-    <Container>
+    <>
       <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
         <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
           <Typography>Salgados</Typography>
@@ -377,39 +405,40 @@ export const Cardapio = ({restauranteId}) => {
         </AccordionSummary>
         <AccordionDetails>
         <List>
-                {
+        {
                     cardapio.map(
-                        (item, i) => item.categoria == "doce" ?
-                                (   <>
-                                        <ListItem disablePadding key={i}>
-                                            <ListItemText 
-                                                primary={item.nome}
-                                                secondary={
-                                                    <div>
-                                                        <Row>
-                                                            <Col xxxl={8} xxl={8} xl={8} lg={8} md={12} sm={12}>
-                                                                <Typography
-                                                                    sx={{ display: 'inline' }}
-                                                                    component="span"
-                                                                    variant="body"
-                                                                    color="text.primary"
-                                                                >
-                                                                    {item.descricao}
-                                                                </Typography>
-                                                            </Col>
-                                                            <Col xxxl={4} xxl={4} xl={4} lg={4} md={12} sm={12} textAlign="right">
-                                                                <Typography
-                                                                    sx={{ textAlign: "end" }}
-                                                                    component="p"
-                                                                    variant="body"
-                                                                    color="text.primary"
-                                                                >
-                                                                    R${item.preco}
-                                                                </Typography>
-                                                            </Col>
-                                                        </Row>
-                                                        <Box component="div" sx={{ my: 2, display: "flex", justifyContent: "right" }}>
-                                                        <TextField
+                        (item, i) => {
+                            if(item.categoria == "doce"){
+                                return(<>
+                                            <ListItem disablePadding key={i}>
+                                                <ListItemText 
+                                                    primary={item.nome}
+                                                    secondary={
+                                                        <div>
+                                                            <Row>
+                                                                <Col xxxl={8} xxl={8} xl={8} lg={8} md={12} sm={12}>
+                                                                    <Typography
+                                                                        sx={{ display: 'inline' }}
+                                                                        component="span"
+                                                                        variant="body"
+                                                                        color="text.primary"
+                                                                    >
+                                                                        {item.descricao}
+                                                                    </Typography>
+                                                                </Col>
+                                                                <Col xxxl={4} xxl={4} xl={4} lg={4} md={12} sm={12} textAlign="right">
+                                                                    <Typography
+                                                                        sx={{ textAlign: "end" }}
+                                                                        component="p"
+                                                                        variant="body"
+                                                                        color="text.primary"
+                                                                    >
+                                                                        R${item.preco}
+                                                                    </Typography>
+                                                                </Col>
+                                                            </Row>
+                                                            <Box component="div" sx={{ my: 2, display: "flex", justifyContent: "right" }}>
+                                                            <TextField
                                                                 fullWidth
                                                                 required
                                                                 id="outlined-required"
@@ -418,10 +447,9 @@ export const Cardapio = ({restauranteId}) => {
                                                                 onChange={({target}) => {
                                                                     for(let j = 0; j < cardapio.length; j++){
                                                                         //Encontra index do prod a alterar
-                                                                        if(cardapio[j]._id == item._id){
+                                                                        if(cardapio[j]._id === item._id){
                                                                             //add prop
                                                                             cardapio[j].un = target.value
-                                                                            console.log(j)
                                                                             break;
                                                                         }
                                                                     }
@@ -431,18 +459,64 @@ export const Cardapio = ({restauranteId}) => {
                                                                 size="small"
                                                                 margin="dense"
                                                             />
-                                                            <Button variant="outlined" size="small" onClick={() => console.log(item)}>
-                                                                Pedir
-                                                            </Button>
-                                                        </Box>
-                                                    </div>
-                                                }
-                                                />
-                                            </ListItem>
-                                        <Divider/>
-                                    </>
-                            ): null
-                        
+                                                                {
+                                                                    item && item?.selecionado ? 
+                                                                    (<Button variant="outlined" size="small" onClick={
+                                                                        () => {
+                                                                            //encontra o INDICE do objeto
+                                                                            let encontrado;
+                                                                            for(let i = 0; i < pedidos.length; i++){
+                                                                                if(pedidos[i]._id === item._id){
+                                                                                    encontrado = i;
+                                                                                    console.log(cardapio[i])
+                                                                                    break;
+                                                                                }
+                                                                            }
+                                                                            console.log(encontrado)
+                                                                            //remove
+                                                                            pedidos.splice(encontrado, 1)
+                                                                            //atualiza
+                                                                            for(let j = 0; j < cardapio.length; j++){
+                                                                                //Encontra index do prod a alterar
+                                                                                if(cardapio[j]._id === item._id){
+                                                                                    cardapio[j].selecionado = false
+                                                                                    break;
+                                                                                }
+                                                                            }
+                                                                            setCardapio(cardapio);
+                                                                            setPedidos([...pedidos])
+                                                                        }
+                                                                        }>
+                                                                        Cancelar
+                                                                    </Button>):
+                                                                    (
+                                                                        <Button variant="outlined" size="small" onClick={
+                                                                            () => {
+                                                                                setPedidos([...pedidos, item])
+                                                                                for(let j = 0; j < cardapio.length; j++){
+                                                                                    //Encontra index do prod a alterar
+                                                                                    if(cardapio[j]._id === item._id){
+                                                                                        cardapio[j].selecionado = true
+                                                                                        break;
+                                                                                    }
+                                                                                }
+                                                                                setCardapio(cardapio);
+                                                                            }
+                                                                            }>
+                                                                            Pedir
+                                                                        </Button>
+                                                                    )
+                                                                }
+                                                            </Box>
+                                                        </div>
+                                                    }
+                                                    />
+                                                </ListItem>
+                                            <Divider/>
+                                        </>
+                                )
+                            }
+                        }
                     )
                 }
             </List>
@@ -453,8 +527,8 @@ export const Cardapio = ({restauranteId}) => {
           <Typography>Bebidas</Typography>
         </AccordionSummary>
         <AccordionDetails>
-        <List>
-                {
+            <List>
+            {
                     cardapio.map(
                         (item, i) => {
                             if(item.categoria == "bebida"){
@@ -487,31 +561,75 @@ export const Cardapio = ({restauranteId}) => {
                                                                 </Col>
                                                             </Row>
                                                             <Box component="div" sx={{ my: 2, display: "flex", justifyContent: "right" }}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    required
-                                                                    id="outlined-required"
-                                                                    label="Un"
-                                                                    defaultValue={0}
-                                                                    onChange={({target}) => {
-                                                                        for(let j = 0; j < cardapio.length; j++){
-                                                                            //Encontra index do prod a alterar
-                                                                            if(cardapio[j]._id == item._id){
-                                                                                //add prop
-                                                                                cardapio[j].un = target.value
-                                                                                console.log(j)
-                                                                                break;
-                                                                            }
+                                                            <TextField
+                                                                fullWidth
+                                                                required
+                                                                id="outlined-required"
+                                                                label="Un"
+                                                                defaultValue={0}
+                                                                onChange={({target}) => {
+                                                                    for(let j = 0; j < cardapio.length; j++){
+                                                                        //Encontra index do prod a alterar
+                                                                        if(cardapio[j]._id === item._id){
+                                                                            //add prop
+                                                                            cardapio[j].un = target.value
+                                                                            break;
                                                                         }
-                                                                        setCardapio(cardapio);
-                                                                    }}
-                                                                    type="number"
-                                                                    size="small"
-                                                                    margin="dense"
-                                                                />
-                                                                <Button variant="outlined" size="small">
-                                                                    Pedir
-                                                                </Button>
+                                                                    }
+                                                                    setCardapio(cardapio);
+                                                                }}
+                                                                type="number"
+                                                                size="small"
+                                                                margin="dense"
+                                                            />
+                                                                {
+                                                                    item && item?.selecionado ? 
+                                                                    (<Button variant="outlined" size="small" onClick={
+                                                                        () => {
+                                                                            //encontra o INDICE do objeto
+                                                                            let encontrado;
+                                                                            for(let i = 0; i < pedidos.length; i++){
+                                                                                if(pedidos[i]._id === item._id){
+                                                                                    encontrado = i;
+                                                                                    console.log(cardapio[i])
+                                                                                    break;
+                                                                                }
+                                                                            }
+                                                                            console.log(encontrado)
+                                                                            //remove
+                                                                            pedidos.splice(encontrado, 1)
+                                                                            //atualiza
+                                                                            for(let j = 0; j < cardapio.length; j++){
+                                                                                //Encontra index do prod a alterar
+                                                                                if(cardapio[j]._id === item._id){
+                                                                                    cardapio[j].selecionado = false
+                                                                                    break;
+                                                                                }
+                                                                            }
+                                                                            setCardapio(cardapio);
+                                                                            setPedidos([...pedidos])
+                                                                        }
+                                                                        }>
+                                                                        Cancelar
+                                                                    </Button>):
+                                                                    (
+                                                                        <Button variant="outlined" size="small" onClick={
+                                                                            () => {
+                                                                                setPedidos([...pedidos, item])
+                                                                                for(let j = 0; j < cardapio.length; j++){
+                                                                                    //Encontra index do prod a alterar
+                                                                                    if(cardapio[j]._id === item._id){
+                                                                                        cardapio[j].selecionado = true
+                                                                                        break;
+                                                                                    }
+                                                                                }
+                                                                                setCardapio(cardapio);
+                                                                            }
+                                                                            }>
+                                                                            Pedir
+                                                                        </Button>
+                                                                    )
+                                                                }
                                                             </Box>
                                                         </div>
                                                     }
@@ -520,7 +638,8 @@ export const Cardapio = ({restauranteId}) => {
                                             <Divider/>
                                         </>
                                 )
-                            }else{
+                            }
+                            else{
                                 return(
                                     <Typography variant="h5" component="h1">
                                         Nenhum registro encontrado.
@@ -600,6 +719,39 @@ export const Cardapio = ({restauranteId}) => {
                 </Col>
             </Row>
         </form> */}
-    </Container>
+        <div>
+            <Typography variant="h3" component="h1">
+                Revisar pedido
+            </Typography>
+            {
+                pedidos.map(
+                    e => (
+                        <Row>
+                            <Col>
+                                <Typography>
+                                    {e.nome}
+                                </Typography>
+                            </Col>
+                            <Col>
+                                <Typography>
+                                    {e.preco}
+                                </Typography>
+                            </Col>
+                            <Col>
+                                <Typography>
+                                    {e.un}
+                                </Typography>
+                            </Col>
+                        </Row>
+                    )
+                )
+            }
+        </div>
+        <div>
+            <Button variant='contained' onClick={submeterPedido}>
+                Finalizar pedido
+            </Button>
+        </div>
+    </>
   );
 }

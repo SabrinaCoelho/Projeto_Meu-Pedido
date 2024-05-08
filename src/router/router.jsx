@@ -44,9 +44,13 @@ export const router = createBrowserRouter([
                         element: <PesquisarRestaurantes/>
                     },
                     {
+                        path: "acesso-comanda-digital",
+                        element: <AcessoComandaDigital/>
+                    },
+                    /* {
                         path: "comanda-digital",
                         element: <ComandaDigital/>
-                    },
+                    }, */
                     {
                         path: "cardapio",
                         element: <Cardapio/>

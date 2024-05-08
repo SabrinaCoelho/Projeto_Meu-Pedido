@@ -19,8 +19,6 @@ export const PerfilPublico = ({restauranteDados}) => {
         submeterUsuario
     } = useCadastroUsuarioContext()
     
-    
-
     return (
         <Container>
             <Row>
