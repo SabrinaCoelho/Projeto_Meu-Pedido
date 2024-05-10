@@ -28,7 +28,7 @@ export const router = createBrowserRouter([
                 element: <LayoutBasePerfil/>,
                 children:[
                     {
-                        path: ":userId",
+                        path: "",
                         element: <Typography variant="h1" component="h1">O que deseja fazer?</Typography>
                     },
                     {
@@ -45,12 +45,14 @@ export const router = createBrowserRouter([
                     },
                     {
                         path: "acesso-comanda-digital",
-                        element: <AcessoComandaDigital/>
+                        element: <AcessoComandaDigital/>,
+                        children:[
+                            {
+                                path: "comanda-digital",
+                                element: <ComandaDigital/>
+                            }
+                        ]
                     },
-                    /* {
-                        path: "comanda-digital",
-                        element: <ComandaDigital/>
-                    }, */
                     {
                         path: "cardapio",
                         element: <Cardapio/>

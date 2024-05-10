@@ -59,6 +59,7 @@ export const LayoutBasePerfil = () => {
         setTelefone,
         setRestauranteId,
         setEmail, 
+        setTipo,
         setSenha, 
         setCnpj, 
         setSenhaConfirmada, 
@@ -67,24 +68,34 @@ export const LayoutBasePerfil = () => {
         submeterUsuario
     } = useCadastroUsuarioContext()
     
+    const usuarioEmail = localStorage.getItem("usuario");
+    const token = localStorage.getItem("token");
+
     useEffect(
         () => {
-            axios.get("http://localhost:3001/usuarios/"+userId, )
-            .then(
-                res => {
-                    console.log("OK, CHAOS!")
-                    console.log(res.data);
-                    if(res){
-                        console.log(res.data.nome)
-                        setNome(res.data.nome);
-                        setEmail(res.data.email);
-                        console.log(usuario)
+            axios.get(`http://localhost:3001/api/aut/usuarios/${usuarioEmail}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
                     }
+                })
+                .then(
+                    res => {
+                        console.log("OK, CHAOS!")
+                        console.log(res.data);
+                        if(res){
+                            const usuario = res.data.usuario
+                            console.log(usuario)
+                            setNome(usuario.nome);
+                            setEmail(usuario.email);
+                            setTipo(usuario.tipo);
+                        }
+                    }
+                )
+                .catch(err => {//TODO
+                    console.log("NAO deu certo")
+                    alert(err.response.data.message);
                 }
-            )
-            .catch(err => {//TODO
-                console.log("NAO deu certo")
-            }
 
             ) 
         }, [login, userId]
