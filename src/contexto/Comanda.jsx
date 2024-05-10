@@ -121,16 +121,24 @@ export const ComandaProvider = ({ children }) => {
         })
     }
     
+    const usuarioEmail = localStorage.getItem("usuario");
+    const token = localStorage.getItem("token");
 
     const submeterComanda = () => {
         
         console.log(comanda)
-        axios.post("http://localhost:3001/comanda", {comanda})
+        axios.post("http://localhost:3001/api/comandas",
+            {comanda},
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        )
             .then(
                 res => {
                     console.log("OK, CHAOS!")
                     console.log(res);
-                    
                 }
             )
             .catch(err => {//TODO
