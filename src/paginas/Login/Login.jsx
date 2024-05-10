@@ -20,11 +20,12 @@ export const Login = () => {
         event.preventDefault();
         console.log(login)
 
-        axios.post("http://localhost:3001/login", {login})
+        axios.post("http://localhost:3001/api/aut/login", {login})
             .then(
                 res => {
                     console.log("OK, CHAOS!")
                     console.log(res);
+                    localStorage.setItem("token", res.token)
                     if(res){
                         navegar('/perfil/'+res.data._id)
                     }
