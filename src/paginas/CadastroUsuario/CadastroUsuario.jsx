@@ -1,8 +1,5 @@
-import { Tipografia } from "../../componentes/Tipografia/Tipografia"
-import { CampoTexto } from "../../componentes/CampoTexto/CampoTexto"
 import { Container, Col, Row } from "react-grid-system"
-import { Botao } from "../../componentes/Botao/Botao"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { useCadastroUsuarioContext } from "../../contexto/CadastroUsuario"
 import { useLocation } from 'react-router-dom';
 import { useLoginContext } from "../../contexto/Login"
@@ -36,7 +33,6 @@ export const CadastroUsuario = () => {
         //submeterUsuario()
     }
     const atualizarCadastro = (evento) => {
-        console.log("OK");
         evento.preventDefault();
         submeterUsuario()
     }
@@ -46,7 +42,7 @@ export const CadastroUsuario = () => {
             <form onSubmit={true ? atualizarCadastro: finalizarCadastro}>
                 <Row justify="center" style={{margin: "1.2rem"}}>
                     <Avatar
-                        alt="Remy Sharp"
+                        alt={usuario.nome}
                         src="/static/images/avatar/1.jpg"
                         sx={{ width: 150, height: 150 }}
                     />
@@ -76,7 +72,7 @@ export const CadastroUsuario = () => {
                                             required
                                             id="outlined-required"
                                             label="CNPJ"
-                                            defaultValue=""
+                                            defaultValue={usuario.cnpj}
                                             onChange={({target}) => setCnpj(target.value)}
                                             type="number"
                                             size="small"
@@ -91,6 +87,7 @@ export const CadastroUsuario = () => {
                                             required
                                             id="outlined-required"
                                             label="E-mail"
+                                            defaultValue={usuario.email}
                                             onChange={({target}) => setEmail(target.value)}
                                             type="email"
                                             size="small"
@@ -105,6 +102,7 @@ export const CadastroUsuario = () => {
                                             required
                                             id="outlined-required"
                                             label="Endereço"
+                                            defaultValue={usuario.endereco}
                                             onChange={({target}) => setEndereco(target.value)}
                                             type="text"
                                             size="small"
@@ -149,7 +147,11 @@ export const CadastroUsuario = () => {
                                             required
                                             id="outlined-required"
                                             label="Texto informativo"
-                                            onChange={({target}) => setInformacoes(target.value)}
+                                            defaultValue={usuario.informacoes}
+                                            onChange={({target}) => {
+                                                console.log(target.value)
+                                                setInformacoes(target.value)
+                                            }}
                                             type="text"
                                             size="small"
                                             multiline
@@ -198,7 +200,22 @@ export const CadastroUsuario = () => {
                                     fullWidth
                                     required
                                     id="outlined-required"
-                                    label="Funcionário do restaurante"
+                                    label="Email"
+                                    defaultValue={usuario.email}
+                                    onChange={({target}) => setEmail(target.value)}
+                                    type="email"
+                                    size="small"
+                                    margin="dense"
+                                />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="outlined-required"
+                                    label="Funcionário do restaurante (Restaurante ID)"
                                     defaultValue={usuario.restauranteId}
                                     onChange={({target}) => setRestauranteId(target.value)}
                                     size="small"

@@ -1,97 +1,30 @@
-/* import { Container, Col, Row } from "react-grid-system"
-import { CampoTexto } from "../../componentes/CampoTexto/CampoTexto"
-import { useAtendimentoContext } from "../../contexto/Atendimento"
-import { Botao } from "../../componentes/Botao/Botao"
-import { useEffect, useState } from "react"
-import { TextField, Button } from "@mui/material"
-import axios from "axios"
-
-export const PesquisarRestaurantes = () => {
-    const [pesquisa, setPesquisa] = useState("")
-
-    const pesquisar = (event) => {
-        event.preventDefault();
-        console.log(pesquisa)
-        axios.get("http://localhost:3001/restaurantes/"+pesquisa, {})
-            .then(
-                res => {
-                    console.log("OK, CHAOS!")
-                    console.log(res);
-                    
-                }
-            )
-            .catch(err => {//TODO
-                console.log("NAO deu certo")
-            }
-
-        )
-    }
-    // useEffect(
-    //     () => {
-    //         axios.get("http://localhost:3001/restaurantes", {pesquisa})
-    //             .then(
-    //                 res => {
-    //                     console.log("OK, CHAOS!")
-    //                     console.log(res);
-                        
-    //                 }
-    //             )
-    //             .catch(err => {//TODO
-    //                 console.log("NAO deu certo")
-    //             }
-
-    //         )
-    //     },[pesquisa]
-    // )
-    
-    return (
-        <Container style={{margin: "80px"}}>
-            <form onSubmit={pesquisar}>
-                <Row justify="center" align="center">
-                    <Col xxl={8} xl={8} lg={8} md={8} sm={12}>
-                        <TextField
-                            fullWidth
-                            required
-                            id="outlined-required"
-                            label="Nome do restaurante ou ID"
-                            defaultValue=""
-                            onChange={({target}) => setPesquisa(target.value)}
-                            size="small"
-                            margin="dense"
-                        />
-                    </Col>
-                    <Col justify="right" xxl={2} xl={2} lg={2} md={2} sm={12}>
-                        <Button variant="contained" type="submit">
-                            Pesquisar
-                        </Button>
-                    </Col>
-                </Row>
-            </form>
-        </Container>
-    )
-} */
-
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { PerfilPublico } from '../../componentes/PerfilPublico/PerfilPublico';
+import { useLocation, useParams } from 'react-router-dom';
+import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 
 export const PesquisarRestaurantes = () => {
     const [pesquisa, setPesquisa] = useState([])
     const [carregando, setCarregando] = useState(true)
     const [inputValue, setInputValue] = useState('');
-    const [restauranteDados, setRestauranteDados] = useState({});
+    const [restauranteDados, setRestauranteDados] = useState(null);
+    
+    const { restauranteId } = useParams();
+    const {pathname} = useLocation()
 
+    //Busca todos os restaurantes
     useEffect(
         () => {
-            axios.get("http://localhost:3001/restaurantes", {})
+            // console.log(pathname)
+            // console.log(restauranteId)
+            axios.get("http://localhost:3001/api/restaurantes", {})
                 .then(
                     res => {
                         console.log("OK, CHAOS!")
-                        console.log(res.data);
+                        console.log(res.data.restaurantes);
                         setCarregando(false)
-                        setPesquisa(res.data)
+                        setPesquisa(res.data.restaurantes)
                     }
                 )
                 .catch(err => {//TODO
@@ -102,44 +35,85 @@ export const PesquisarRestaurantes = () => {
             )
         },[carregando]
     )
+    //Busca restaurante selecionado
     useEffect(
         () => {
-            axios.get("http://localhost:3001/restaurantes/"+inputValue, {})
-                .then(
-                    res => {
-                        console.log("OK, CHAOS!")
-                        console.log(res.data._id);
-                        setRestauranteDados(res.data)
+            console.log(inputValue)
+            if(restauranteId){
+                console.log(restauranteId)
+                axios.get("http://localhost:3001/api/restaurantes/"+restauranteId, {})
+                    .then(
+                        res => {
+                            console.log("OK, CHAOS!")
+                            console.log(res.data);
+                            setRestauranteDados(res.data)
+                        }
+                    )
+                    .catch(err => {//TODO
+                        setCarregando(false)
+                        console.log("NAO deu certo")
                     }
-                )
-                .catch(err => {//TODO
-                    setCarregando(false)
-                    console.log("NAO deu certo")
-                }
 
-            )
+                )
+            }else if(inputValue){
+                axios.get("http://localhost:3001/api/restaurantes/"+inputValue, {})
+                    .then(
+                        res => {
+                            if(res && res.data){
+                                const {restaurante} = res.data;
+                                setRestauranteDados(restaurante)
+                                console.log(restaurante)
+                            }
+                            setCarregando(false)
+                        }
+                    )
+                    .catch(err => {//TODO
+                        alert(err.message)
+                        setCarregando(false)
+                    }
+
+                )
+            }
+            
         },[inputValue]
     )
-    
-  return (
-    <>
-        <div>{`inputValue: '${inputValue}'`}</div>
-        <Autocomplete
-            size="small"
-            margin="dense"
-            disablePortal
-            inputValue={inputValue}
-            onInputChange={(event, newInputValue) => {
-                setInputValue(newInputValue);
-            }}
-            id="combo-box-demo"
-            options={pesquisa}
-            renderInput={(params) => <TextField {...params} label="Restaurante"
-            />}
-        />
-        {
-            Object.keys(restauranteDados).length ? (<PerfilPublico restauranteDados={restauranteDados}/>) : (<></>)
-        }
-    </>
-  );
+
+    const handleChange = ({target}) => {
+        setInputValue(target.value);
+    };
+    return !restauranteId ? (
+        <>
+            <div>{`inputValue: '${inputValue}'`}
+                <Box sx={{ minWidth: 120 }}>
+                    <FormControl fullWidth>
+                        <InputLabel id="demo-simple-select-label">Restaurante</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={inputValue}
+                            label="Restaurante"
+                            size="small"
+                            onChange={handleChange}
+                            >
+                            {
+                                pesquisa.map((e,i) => (
+                                    <MenuItem key={i} value={e.id}>{e.label}</MenuItem>
+                                ))
+                            }
+                        </Select>
+                    </FormControl>
+                </Box>
+                {
+                    restauranteDados && inputValue ? 
+                    (<PerfilPublico restauranteDados={restauranteDados}/>):
+                    (<></>)
+                }
+            </div>
+        </>): 
+        (
+            <>
+                <PerfilPublico restauranteDados={restauranteDados}/> 
+            </>
+        )
+        ;
 }

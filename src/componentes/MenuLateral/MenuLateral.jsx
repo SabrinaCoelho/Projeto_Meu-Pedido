@@ -18,8 +18,12 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
 import { Link } from 'react-router-dom';
-import { Avatar } from '@mui/material';
+import { Avatar, Button } from '@mui/material';
 import { Row } from 'react-grid-system';
+import { useCadastroUsuarioContext } from '../../contexto/CadastroUsuario';
+import { useSocketContext } from '../../contexto/Socket';
+import { ConnectionState } from "../../componentes/ConnectionState/ConnectionState"
+import { ConnectionManager } from "../../componentes/ConnectionManager/ConnectionManager"
 
 const drawerWidth = 240;
 
@@ -42,12 +46,19 @@ function MenuLateral({children, itensMenu}) {
     }
   };
 
+  const { 
+    usuario
+  } = useCadastroUsuarioContext();
+
+  const { 
+    isConnected
+  } = useSocketContext();
   const drawer = (
     <div>
       <Toolbar>
         <Row justify="center" style={{margin: "1.2rem"}}>
           <Avatar
-            alt="Remy Sharp"
+            alt={usuario.nome}
             src="/static/images/avatar/1.jpg"
             sx={{ width: 80, height: 80 }}
           />
@@ -126,6 +137,9 @@ function MenuLateral({children, itensMenu}) {
           open
         >
           {drawer}
+          <ConnectionState isConnected={ isConnected } />
+          {/* <Events events={ fooEvents } /> */}
+          <ConnectionManager />
         </Drawer>
       </Box>
       <Box

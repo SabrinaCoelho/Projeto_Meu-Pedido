@@ -1,10 +1,7 @@
-import { Container, Col, Row } from "react-grid-system"
-import { CampoTexto } from "../../componentes/CampoTexto/CampoTexto"
-import { useLoginContext } from "../../contexto/Login"
-import { Botao } from "../../componentes/Botao/Botao"
-import { WrapperConteudo } from "../../componentes/WrapperConteudo/WrapperConteudo"
-import { useComandaContext } from "../../contexto/Comanda"
-import { Card, CardContent, CardActions, Typography, Button } from '@mui/material';
+import { Typography } from '@mui/material';
+import { useEffect, useState } from "react"
+import axios from "axios"
+import { useCadastroUsuarioContext } from "../../contexto/CadastroUsuario"
 
 export const HistoricoAtendimentos = () => {
     /* const atendimentos = [
@@ -63,7 +60,7 @@ export const HistoricoAtendimentos = () => {
         setAtendente,
         setCliente,
         setMesa,
-        setComandaID,
+        setComandaId,
         setInicio,
         setTermino,
         submeterComanda
@@ -101,9 +98,52 @@ export const HistoricoAtendimentos = () => {
             </TableContainer>
         </Container>
     ) */
+    
+    const [carregando, setCarregando] = useState(true)
+    const { 
+        usuario, 
+        
+    } = useCadastroUsuarioContext()
+    //Busca todos os atendimentos
+    useEffect(
+        () => {
+            if(usuario.tipo === "cliente"){
+                axios.get("http://localhost:3001/api/atendimentos/"+usuario.email, {})//TODO - Mudar pro ID do cliente
+                    .then(
+                        res => {
+                            console.log(res.data.atendimentos);
+                            setCarregando(false)
+                        }
+                    )
+                    .catch(err => {//TODO
+                        setCarregando(false)
+                        alert(err.message);
+                        console.log("NAO deu certo")
+                    }
+
+                )
+            }else if(usuario.tipo === "atendente"){
+                console.log(usuario)
+                axios.get(`http://localhost:3001/api/comandas-fechadas/${usuario.id}`)
+                    .then(
+                        res => {
+                            console.log(res.data);
+                            setCarregando(false)
+                        }
+                    )
+                    .catch(err => {//TODO
+                        setCarregando(false)
+                        console.log("NAO deu certo")
+                    }
+
+                )
+            }
+            
+        },[carregando]
+    )
     return(
         <Typography variant="h1" component="h1">
-            Em construção
+            Falta plotar(atendente)
         </Typography>
     )
 }

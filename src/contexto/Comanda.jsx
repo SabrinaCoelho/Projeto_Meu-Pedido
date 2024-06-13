@@ -12,27 +12,33 @@ import { useNavigate } from 'react-router-dom';
     termino: ''
 } */
 const comandaInicial = {
-    atendente: '',
+    atendenteId: '',
+    atendenteNome: '',
     erros: {},
     cliente: '',
     mesa: '',
-    comandaID: '',
+    comandaId: '',
     inicio: '',
     termino: '',
+    restauranteId: '',
+    total: '',
     pedidos: []
 }
 
 export const ComandaContext = createContext({
     comanda: comandaInicial,
     setErros: () => null,
-    setAtendente: () => null,
+    setRestauranteId: () => null,
+    setAtendenteId: () => null,
+    setAtendenteNome: () => null,
     setCliente: () => null,
     setMesa: () => null,
-    setComandaID: () => null,
+    setComandaId: () => null,
     setInicio: () => null,
     setTermino: () => null,
     setStatus: () => null,
-    setPedidos: () => null
+    setPedidos: () => null,
+    setTotal: () => null
 })
 
 export const useComandaContext = () => {
@@ -45,12 +51,28 @@ export const ComandaProvider = ({ children }) => {
 
     const [comanda, setComanda] = useState(comandaInicial)
 
-    const setAtendente = (atendente) => {
-        console.log(atendente)
+    const setRestauranteId = (restauranteId) => {
         setComanda(estadoAnterior => {
             return {
                 ...estadoAnterior,
-                atendente
+                restauranteId
+            }
+        })
+    }
+
+    const setAtendenteId = (atendenteId) => {
+        setComanda(estadoAnterior => {
+            return {
+                ...estadoAnterior,
+                atendenteId
+            }
+        })
+    }
+    const setAtendenteNome = (atendenteNome) => {
+        setComanda(estadoAnterior => {
+            return {
+                ...estadoAnterior,
+                atendenteNome
             }
         })
     }
@@ -63,7 +85,6 @@ export const ComandaProvider = ({ children }) => {
         })
     }
     const setCliente = (cliente) => {
-        console.log(cliente)
         setComanda(estadoAnterior => {
             return {
                 ...estadoAnterior,
@@ -80,11 +101,11 @@ export const ComandaProvider = ({ children }) => {
         })
     }
     
-    const setComandaID = (comandaID) => {
+    const setComandaId = (comandaId) => {
         setComanda(estadoAnterior => {
             return {
                 ...estadoAnterior,
-                comandaID
+                comandaId
             }
         })
     }
@@ -112,6 +133,14 @@ export const ComandaProvider = ({ children }) => {
             }
         })
     }
+    const setTotal = (total) => {//fechou (tem o termino lá) mas foi pago?
+        setComanda(estadoAnterior => {
+            return {
+                ...estadoAnterior,
+                total
+            }
+        })
+    }
     const setPedidos = (pedidos) => {
         setComanda(estadoAnterior => {
             return {
@@ -121,19 +150,30 @@ export const ComandaProvider = ({ children }) => {
         })
     }
     
+    const usuarioEmail = localStorage.getItem("usuario");
+    const token = localStorage.getItem("token");
 
     const submeterComanda = () => {
-        
         console.log(comanda)
-        axios.post("http://localhost:3001/comanda", {comanda})
+        axios.post("http://localhost:3001/api/comandas",
+            {comanda},
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        )
             .then(
                 res => {
                     console.log("OK, CHAOS!")
                     console.log(res);
-                    
+
+                    setComandaId(res.data.comanda.comandaId)
+                    navegar('/perfil/comanda-digital')
                 }
             )
             .catch(err => {//TODO
+                console.log(err)
                 console.log("NAO deu certo")
             }
 
@@ -147,15 +187,18 @@ export const ComandaProvider = ({ children }) => {
     const contexto = {
         comanda,
         setErro,
-        setAtendente,
+        setRestauranteId,
+        setAtendenteId,
+        setAtendenteNome,
         setCliente,
         setMesa,
-        setComandaID,
+        setComandaId,
         setInicio,
         setTermino,
         setPedidos,
         setStatus,
-        submeterComanda
+        submeterComanda,
+        setTotal
     }
 
     return (

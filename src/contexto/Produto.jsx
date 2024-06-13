@@ -10,6 +10,7 @@ const ProdutoInicial = {
 export const ProdutoContext = createContext({
     produto: ProdutoInicial,
     erros: {},
+    setRestauranteId: () => null,
     setNome: () => null,
     setDescricao: () => null,
     setPreco: () => null,
@@ -32,6 +33,15 @@ export const ProdtutoProvider = ({ children }) => {
             return {
                 ...estadoAnterior,
                 nome
+            }
+        })
+    }
+    const setRestauranteId = (restauranteId) => {
+        console.log(restauranteId)
+        setProduto(estadoAnterior => {
+            return {
+                ...estadoAnterior,
+                restauranteId
             }
         })
     }
@@ -73,6 +83,7 @@ export const ProdtutoProvider = ({ children }) => {
 
     const contexto = {
         produto,
+        setRestauranteId,
         setNome,
         setDescricao,
         setPreco,

@@ -6,7 +6,6 @@ import { Login } from "../paginas/Login/Login";
 import { AcessoComandaDigital } from "../paginas/ComandaDigital/AcessoComandaDigital";
 import { SelecaoTipoUsuario } from "../paginas/CadastroUsuario/SelecaoTipoUsuario";
 import { CadastroUsuario } from "../paginas/CadastroUsuario/CadastroUsuario";
-import { Tipografia } from "../componentes/Tipografia/Tipografia";
 import { Atendimento } from "../paginas/InicioAtendimento/InicioAtendimento";
 import { PesquisarRestaurantes } from "../paginas/PesquisaRestaurantes/PesquisaRestaurantes";
 import { ComandaDigital } from "../paginas/ComandaDigital/ComandaDigital";
@@ -17,6 +16,7 @@ import MenuLateral from "../componentes/MenuLateral/MenuLateral"
 import Typography from '@mui/material/Typography';
 import ConfigurarFuncionario from "../paginas/ConfigurarFuncionario/ConfigurarFuncionario";
 import { HistoricoAtendimentos } from "../paginas/HistoricoAtendimentos/HistoricoAtendimentos";
+import { PesquisarComandas } from "../paginas/PesquisarComandas/PesquisarComandas"
 
 export const router = createBrowserRouter([
     {
@@ -28,7 +28,7 @@ export const router = createBrowserRouter([
                 element: <LayoutBasePerfil/>,
                 children:[
                     {
-                        path: ":userId",
+                        path: "",
                         element: <Typography variant="h1" component="h1">O que deseja fazer?</Typography>
                     },
                     {
@@ -44,13 +44,23 @@ export const router = createBrowserRouter([
                         element: <PesquisarRestaurantes/>
                     },
                     {
-                        path: "acesso-comanda-digital",
-                        element: <AcessoComandaDigital/>
+                        path: "restaurantes/:restauranteId",//TO DO REVISAR
+                        element: <PesquisarRestaurantes/>
                     },
-                    /* {
+                    {
                         path: "comanda-digital",
                         element: <ComandaDigital/>
-                    }, */
+                    },
+                    {
+                        path: "acesso-comanda-digital",
+                        element: <AcessoComandaDigital/>,
+                        children:[
+                            {
+                                path: "comanda-digital",
+                                element: <ComandaDigital/>
+                            }
+                        ]
+                    },
                     {
                         path: "cardapio",
                         element: <Cardapio/>
@@ -62,6 +72,10 @@ export const router = createBrowserRouter([
                     {
                         path: "historico-atendimentos",
                         element: <HistoricoAtendimentos/>
+                    },
+                    {
+                        path: "comandas-em-andamento",
+                        element: <PesquisarComandas/>
                     },
                 ]
             },
@@ -80,6 +94,18 @@ export const router = createBrowserRouter([
                     {
                         path: "acesso-comanda-digital",
                         element: <AcessoComandaDigital/>
+                    },
+                    {
+                        path: "restaurantes",
+                        element: <PesquisarRestaurantes/>
+                    },
+                    {
+                        path: "restaurantes/:restauranteId",//TO DO REVISAR
+                        element: <PesquisarRestaurantes/>
+                    },
+                    {
+                        path: "comanda-digital",
+                        element: <ComandaDigital/>
                     },
                     {
                         path: "cadastro",

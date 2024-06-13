@@ -1,7 +1,4 @@
 import { Container, Row, Col } from "react-grid-system"
-import { WrapperConteudo } from "../../componentes/WrapperConteudo/WrapperConteudo"
-import { Tipografia } from "../../componentes/Tipografia/Tipografia"
-import { Botao } from "../../componentes/Botao/Botao"
 import { Link } from "react-router-dom/dist"
 import { Typography, Button } from "@mui/material"
 

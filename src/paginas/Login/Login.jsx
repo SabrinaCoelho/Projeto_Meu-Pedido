@@ -1,9 +1,6 @@
 import { Container, Col, Row } from "react-grid-system"
-import { CampoTexto } from "../../componentes/CampoTexto/CampoTexto"
 import { useLoginContext } from "../../contexto/Login"
-import { Botao } from "../../componentes/Botao/Botao"
 import { Button, TextField } from "@mui/material"
-import { useEffect, useState } from "react"
 import axios from "axios";
 import { useNavigate } from "react-router-dom"
 
@@ -25,14 +22,16 @@ export const Login = () => {
                 res => {
                     console.log("OK, CHAOS!")
                     console.log(res);
-                    localStorage.setItem("token", res.token)
+                    localStorage.setItem("token", res.data.token)
+                    localStorage.setItem("usuario", res.data.usuario.email)
                     if(res){
-                        navegar('/perfil/'+res.data._id)
+                        navegar('/perfil')
                     }
                 }
             )
-            .catch(err => {//TODO
-                console.log("NAO deu certo")
+            .catch(err => {
+                console.log(err.response.data.message);
+                alert(err.response.data.message);
             }
 
         )

@@ -10,9 +10,10 @@ const AtendimentoInicial = {
 export const AtendimentoContext = createContext({
     atendimento: AtendimentoInicial,
     erros: {},
+    setRestauranteId: () => null,
     setMesa: () => null,
     setCliente: () => null,
-    setComanda: () => null
+    setComandaId: () => null
 })
 
 export const useAtendimentoContext = () => {
@@ -24,6 +25,16 @@ export const AtendimentoProvider = ({ children }) => {
     const navegar = useNavigate()
 
     const [atendimento, setAtendimento] = useState(AtendimentoInicial)
+
+    const setRestauranteId = (restauranteId) => {
+        console.log(restauranteId)
+        setAtendimento(estadoAnterior => {
+            return {
+                ...estadoAnterior,
+                restauranteId
+            }
+        })
+    }
 
     const setCliente = (cliente) => {
         console.log(cliente)
@@ -42,7 +53,7 @@ export const AtendimentoProvider = ({ children }) => {
             }
         })
     }
-    const setComanda = (comanda) => {
+    const setComandaId = (comanda) => {
         setAtendimento(estadoAnterior => {
             return {
                 ...estadoAnterior,
@@ -64,9 +75,10 @@ export const AtendimentoProvider = ({ children }) => {
 
     const contexto = {
         atendimento,
+        setRestauranteId,
         setMesa,
         setCliente,
-        setComanda,
+        setComandaId,
         submeterAtendimento
     }
 

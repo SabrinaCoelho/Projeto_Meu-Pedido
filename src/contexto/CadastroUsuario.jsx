@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { tipoUsuario } from '../TipoUsuarioEnum';
+import { socket } from '../socket';
 import axios from 'axios';
 
 const usuarioInicial = {
@@ -13,7 +14,6 @@ const usuarioInicial = {
     cnpj: '',
     endereco: '',
     telefone: '',
-    senhaConfirmada: '',
     informacoes: ''
 }
 
@@ -24,6 +24,7 @@ export const useCadastroUsuarioContext = () => {
 export const CadastroUsuarioContext = createContext({
     usuario: usuarioInicial,
     erros: {},
+    setId: () => null,
     setTipo: () => null,
     setNome: () => null,
     setEmail: () => null,
@@ -140,7 +141,7 @@ export const CadastroUsuarioProvider = ({ children }) => {
     const submeterUsuario = () => {
         
         console.log(usuario)
-        axios.post("http://localhost:3001/usuarios", {usuario})
+        axios.post("http://localhost:3001/api/aut/registro", {usuario})
             .then(
                 res => {
                     console.log("OK, CHAOS!")
@@ -151,6 +152,7 @@ export const CadastroUsuarioProvider = ({ children }) => {
                 }
             )
             .catch(err => {//TODO
+                console.log(err.message)
                 console.log("NAO deu certo")
             }
 
@@ -165,6 +167,7 @@ export const CadastroUsuarioProvider = ({ children }) => {
 
     const contexto = {
         usuario,
+        setId,
         setTipo,
         setNome,
         setEndereco,
@@ -174,6 +177,7 @@ export const CadastroUsuarioProvider = ({ children }) => {
         setEmail,
         setSenha,
         setSenhaConfirmada,
+        setInformacoes,
         submeterUsuario,
         //possoSelecionarInteresse
     }

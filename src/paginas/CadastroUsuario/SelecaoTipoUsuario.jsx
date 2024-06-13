@@ -1,9 +1,6 @@
-import { Tipografia } from "../../componentes/Tipografia/Tipografia"
 import {GrupoRadio} from "../../componentes/Radio/GrupoRadio"
 import { useCadastroUsuarioContext } from "../../contexto/CadastroUsuario"
 import { Col, Row } from "react-grid-system"
-import { Botao } from "../../componentes/Botao/Botao"
-import { Link } from "../../componentes/Link/Link"
 import { Link as RouterLink } from "react-router-dom"
 import { Typography, Button } from "@mui/material"
 

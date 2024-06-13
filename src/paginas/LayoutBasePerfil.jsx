@@ -1,16 +1,12 @@
 import styled from '@emotion/styled'
-import { Outlet, useLocation, useParams } from "react-router-dom";
-import { Col, Container, Row } from 'react-grid-system';
-import { Cabecalho } from '../componentes/Cabecalho/Cabecalho';
-import { Tipografia } from '../componentes/Tipografia/Tipografia';
-import { Link } from '../componentes/Link/Link';
-import { Link as RouterLink } from 'react-router-dom'; 
-import { CadastroUsuarioProvider, useCadastroUsuarioContext } from "../contexto/CadastroUsuario";
-import { LoginProvider } from "../contexto/Login";
+import { Outlet, useLocation } from "react-router-dom";
+import { useCadastroUsuarioContext } from "../contexto/CadastroUsuario";
 import { useLoginContext } from "../contexto/Login"
 import MenuLateral from "../componentes/MenuLateral/MenuLateral"
 import { useEffect } from 'react';
 import axios from 'axios';
+
+import { useSocketContext } from '../contexto/Socket'; 
 
 const SideMenu = styled.div`
     height: 100%;
@@ -42,11 +38,12 @@ const ContainerPerfil = styled.div`
     background-color: pink;
 `
 export const LayoutBasePerfil = () => {
+    const { socket, connect, isConnected } = useSocketContext();
     
     let {pathname} = useLocation()
     let teste = pathname.split("/")
     pathname = teste[1]
-    console.log(pathname)
+    //console.log(pathname)
     let userId = teste[2]
 
     const {
@@ -55,36 +52,102 @@ export const LayoutBasePerfil = () => {
     
     const { 
         usuario,
+        setId,
         setNome, 
         setTelefone,
         setRestauranteId,
         setEmail, 
-        setSenha, 
-        setCnpj, 
-        setSenhaConfirmada, 
+        setTipo,
+        setCnpj,
         setEndereco,
         setInformacoes,
-        submeterUsuario
     } = useCadastroUsuarioContext()
     
+    const usuarioEmail = localStorage.getItem("usuario");
+    const token = localStorage.getItem("token");
+
     useEffect(
         () => {
-            axios.get("http://localhost:3001/usuarios/"+userId, )
-            .then(
-                res => {
-                    console.log("OK, CHAOS!")
-                    console.log(res.data);
-                    if(res){
-                        console.log(res.data.nome)
-                        setNome(res.data.nome);
-                        setEmail(res.data.email);
-                        console.log(usuario)
-                    }
+            /* if(isConnected){
+            if(usuario.tipo === "restaurante"){
+                    socket.timeout(10000).emit("restaurante_logado", {usuarioId: usuario.id});
+                }else{
+                    socket.timeout(10000).emit("atualiza_socket", {usuarioId: usuario.id});
                 }
-            )
-            .catch(err => {//TODO
-                console.log("NAO deu certo")
+            } */
+            if(isConnected){
+                let filtro = usuario.tipo === "cliente" ? usuario.email : usuario.id
+                axios.get(`http://localhost:3001/api/comandas_relacionadas/`+ filtro)
+                    .then(
+                        res => {
+                            if(res && res.data){
+                                const {comandas} = res.data;
+                                if(usuario.tipo === "atendente"){
+                                    socket.emit("online", {
+                                        query: {
+                                            comandas,
+                                            usuarioId: usuario.id,
+                                            usuarioTipo: usuario.tipo,
+                                            restauranteId: usuario.restauranteId
+                                        }
+                                    });
+                                }else{
+                                    socket.emit("online", {
+                                        query: {
+                                            comandas,
+                                            usuarioId: usuario.id,
+                                            usuarioTipo: usuario.tipo
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    )
+                    .catch(err => {//TODO
+                        console.log(err.message);
+                        console.log("NAO deu certo");
+                    }
+
+                )
             }
+        }, [isConnected, usuario]
+    );
+    useEffect(
+        () => {
+            axios.get(`http://localhost:3001/api/aut/usuarios/${usuarioEmail}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(
+                    res => {
+                        console.log("OK, CHAOS!")
+                        console.log(res.data);
+                        if(res && res.data){
+                            const {nome, email, tipo, id,telefone, cnpj, endereco, restauranteId, informacoes} = res.data.usuario;
+                            setNome(nome);
+                            setEmail(email);
+                            setTipo(tipo);
+                            setId(id)
+                            setTelefone(telefone);
+                            setCnpj(cnpj);
+                            setEndereco(endereco);
+                            setInformacoes(informacoes);
+                            setRestauranteId(restauranteId)
+                            // console.log(usuario)
+                            // if(tipo === "restaurante"){
+                                // if(!socket.connected){//TODO melhorar isso aqui
+                                    connect();
+                                // }
+                            // }
+                        }
+                    }
+                )
+                .catch(err => {//TODO
+                    console.log("NAO deu certo")
+                    alert(err.response.data.message);
+                }
 
             ) 
         }, [login, userId]
@@ -148,10 +211,6 @@ export const LayoutBasePerfil = () => {
                 link: "/perfil/historico-atendimentos"
             },
             {
-                texto: "Iniciar atendimento",
-                link: "/perfil/iniciar-atendimento"
-            },
-            {
                 texto: "Restaurantes",
                 link: "/perfil/restaurantes"
             },
@@ -161,52 +220,10 @@ export const LayoutBasePerfil = () => {
             },
         ]
     }
+
     return(
         <MenuLateral itensMenu={itens}>
             <Outlet/>
         </MenuLateral>
     )
 }
-
-/* 
-
-                    <SideMenu>
-                        <ContainerPerfil>
-                            <Container>
-                                <Row>
-                                    <Col>
-                                        <Tipografia variante="h5" componente="h1">
-                                            Perfil
-                                        </Tipografia>
-                                    </Col>
-                                </Row>
-                            </Container>
-                        </ContainerPerfil>
-                        {
-                            itens.map((e, i) => (
-                            <SideMenuItem key={i}>
-                                <RouterLink to={e.link}>
-                                    <Tipografia variante="body" componente="body" style={{margin: '0'}}>
-                                        {e.texto}
-                                    </Tipografia>
-                                </RouterLink>
-                            </SideMenuItem>))
-                        }
-                    </SideMenu>
-                    <Conteudo>
-                        <Cabecalho>
-                            <Container>
-                                <Row align="right">
-                                    <Col style={{ textAlign: 'right' }}>
-                                        <Link>
-                                            Logout
-                                        </Link>
-                                    </Col>
-                                </Row>
-                            </Container>
-                        </Cabecalho>
-                        <Container fluid style={{minHeight: "80vh"}}>
-                            <Outlet/>
-                        </Container>
-                    </Conteudo>
-*/
