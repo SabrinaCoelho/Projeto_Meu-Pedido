@@ -16,6 +16,8 @@ const comandaInicial = {
     atendenteNome: '',
     erros: {},
     cliente: '',
+    codigo: '',
+    clienteId: '',
     mesa: '',
     comandaId: '',
     inicio: '',
@@ -29,9 +31,11 @@ export const ComandaContext = createContext({
     comanda: comandaInicial,
     setErros: () => null,
     setRestauranteId: () => null,
+    setCodigo: () => null,
     setAtendenteId: () => null,
     setAtendenteNome: () => null,
     setCliente: () => null,
+    setClienteId: () => null,
     setMesa: () => null,
     setComandaId: () => null,
     setInicio: () => null,
@@ -56,6 +60,14 @@ export const ComandaProvider = ({ children }) => {
             return {
                 ...estadoAnterior,
                 restauranteId
+            }
+        })
+    }
+    const setCodigo = (codigo) => {
+        setComanda(estadoAnterior => {
+            return {
+                ...estadoAnterior,
+                codigo
             }
         })
     }
@@ -89,6 +101,14 @@ export const ComandaProvider = ({ children }) => {
             return {
                 ...estadoAnterior,
                 cliente
+            }
+        })
+    }
+    const setClienteId = (clienteId) => {
+        setComanda(estadoAnterior => {
+            return {
+                ...estadoAnterior,
+                clienteId
             }
         })
     }
@@ -165,16 +185,16 @@ export const ComandaProvider = ({ children }) => {
         )
             .then(
                 res => {
-                    console.log("OK, CHAOS!")
-                    console.log(res);
-
-                    setComandaId(res.data.comanda.comandaId)
-                    navegar('/perfil/comanda-digital')
+                    if(res && res.data){
+                        alert(res.data.message);
+                        const { comandaId } = res.data.comanda;
+                        setComandaId(comandaId);
+                        navegar('/perfil/comanda-digital')
+                    }
                 }
             )
             .catch(err => {//TODO
-                console.log(err)
-                console.log("NAO deu certo")
+                alert(err.response.data.message)
             }
 
         )
@@ -188,9 +208,11 @@ export const ComandaProvider = ({ children }) => {
         comanda,
         setErro,
         setRestauranteId,
+        setCodigo,
         setAtendenteId,
         setAtendenteNome,
         setCliente,
+        setClienteId,
         setMesa,
         setComandaId,
         setInicio,

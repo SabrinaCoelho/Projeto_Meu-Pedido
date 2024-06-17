@@ -16,15 +16,13 @@ export const PesquisarRestaurantes = () => {
     //Busca todos os restaurantes
     useEffect(
         () => {
-            // console.log(pathname)
-            // console.log(restauranteId)
             axios.get("http://localhost:3001/api/restaurantes", {})
                 .then(
                     res => {
-                        console.log("OK, CHAOS!")
-                        console.log(res.data.restaurantes);
-                        setCarregando(false)
-                        setPesquisa(res.data.restaurantes)
+                        if(res && res.data){
+                            setCarregando(false)
+                            setPesquisa(res.data.restaurantes)
+                        }
                     }
                 )
                 .catch(err => {//TODO
@@ -38,15 +36,14 @@ export const PesquisarRestaurantes = () => {
     //Busca restaurante selecionado
     useEffect(
         () => {
-            console.log(inputValue)
             if(restauranteId){
-                console.log(restauranteId)
                 axios.get("http://localhost:3001/api/restaurantes/"+restauranteId, {})
                     .then(
                         res => {
-                            console.log("OK, CHAOS!")
-                            console.log(res.data);
-                            setRestauranteDados(res.data)
+                            if(res && res.data){
+                                setRestauranteDados(res.data)
+                            }
+                            
                         }
                     )
                     .catch(err => {//TODO
@@ -56,7 +53,7 @@ export const PesquisarRestaurantes = () => {
 
                 )
             }else if(inputValue){
-                axios.get("http://localhost:3001/api/restaurantes/"+inputValue, {})
+                axios.get("http://localhost:3001/api/restaurantes/"+inputValue)
                     .then(
                         res => {
                             if(res && res.data){
@@ -83,7 +80,8 @@ export const PesquisarRestaurantes = () => {
     };
     return !restauranteId ? (
         <>
-            <div>{`inputValue: '${inputValue}'`}
+            {/* <div>{`inputValue: '${inputValue}'`} */}
+            <div>
                 <Box sx={{ minWidth: 120 }}>
                     <FormControl fullWidth>
                         <InputLabel id="demo-simple-select-label">Restaurante</InputLabel>
@@ -92,7 +90,6 @@ export const PesquisarRestaurantes = () => {
                             id="demo-simple-select"
                             value={inputValue}
                             label="Restaurante"
-                            size="small"
                             onChange={handleChange}
                             >
                             {

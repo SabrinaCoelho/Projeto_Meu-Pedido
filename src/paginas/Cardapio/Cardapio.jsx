@@ -54,8 +54,12 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 export const Cardapio = ({restauranteId}) => {
     const {socket} = useSocketContext();
 
+    const usuarioEmail = localStorage.getItem("usuario");
+    const token = localStorage.getItem("token");
+
     const {
         produto,
+        setId,
         setRestauranteId,
         setNome,
         setDescricao,
@@ -64,6 +68,7 @@ export const Cardapio = ({restauranteId}) => {
         submeterProduto
     } = useProdutoContext();
 
+    const [editandoProduto, setEditandoProduto] = useState(null);
     const { 
         comanda
      } = useComandaContext();
@@ -79,6 +84,46 @@ export const Cardapio = ({restauranteId}) => {
     const [ totalPedidos, setTotalPedidos ] = useState(comanda.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
     const navegar = useNavigate();
 
+    const atualizaProduto = (event) => {
+        console.log("Atualizando")
+        event.preventDefault();
+        
+        console.log(produto)
+        axios.put("http://localhost:3001/api/produtos/edicao", {produto},
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        )
+            .then(
+                res => {
+                    if(res && res.data){
+                        alert(res.data.message);
+                        event.target.reset();
+                        setNome("");
+                        setDescricao("");
+                        setPreco("");
+                        setEditandoProduto(null);
+                        setCarregando(true);
+                    }
+                }
+            )
+            .catch(
+                err => console.log(err)
+            )
+    }
+    const cancelarAtualizacao = () => {
+        let form = document.getElementById("formEdicao");
+
+        if(form){
+            form.reset();
+        }
+        setNome("");
+        setDescricao("");
+        setPreco("");
+        setEditandoProduto(null);
+    }
     useEffect(
         () => {
             if(restauranteId){
@@ -101,7 +146,6 @@ export const Cardapio = ({restauranteId}) => {
                 axios.get("http://localhost:3001/api/produtos/"+usuario.id, {})
                 .then(
                     res => {
-                        console.log(res.data.produtos)
                         if(res.data && res.data.produtos){//TO DO URG
                             setCardapio(res.data.produtos);
                         }
@@ -154,7 +198,7 @@ export const Cardapio = ({restauranteId}) => {
         }
 
         let {comandaId, restauranteId} = comanda;
-        console.log(pedido)
+        // console.log(pedido)
         if(comanda && comandaId && restauranteId){
             axios.post("http://localhost:3001/api/pedidos", {pedido})
                 .then(
@@ -202,7 +246,8 @@ export const Cardapio = ({restauranteId}) => {
                 let produtoSelecionado = cardapio[j];
                 produtoSelecionado.selecionado = true;
                 //Fortamata o preco do produto e multiplica pela unidade
-                let preco = parseFloat(produtoSelecionado.preco.replace(/,/, '.')) * parseInt(produtoSelecionado.un);
+                let [,precoProduto] = produtoSelecionado.preco.split(/\s/);
+                let preco = parseFloat(precoProduto.replace(/,/, '.')) * parseInt(produtoSelecionado.un);
                 //Adiciona ao valor total atual
                 total += preco;
                 //Formata para R$
@@ -236,7 +281,8 @@ export const Cardapio = ({restauranteId}) => {
                 let produtoSelecionado = cardapio[j];
                 produtoSelecionado.selecionado = false;
                 //Fortamata o preco do produto e multiplica pela unidade
-                let preco = parseFloat(produtoSelecionado.preco.replace(/,/, '.')) * parseInt(produtoSelecionado.un);
+                let [,precoProduto] = produtoSelecionado.preco.split(/\s/);
+                let preco = parseFloat(precoProduto.replace(/,/, '.')) * parseInt(produtoSelecionado.un);
                 //Subtrai do valor total atual
                 total -= preco;
                 let totalFormatado = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -252,10 +298,16 @@ export const Cardapio = ({restauranteId}) => {
     const submeter = (event) => {//Cadastro de produtos
         event.preventDefault()
         event.target.reset();
-        console.log(produto)
+        
         setDescricao("")//TODO - qnd reseto o form, aqui nao ta refletindo. pra grupo radio tbm nao esta
         //submeterProduto(produto)
-        axios.post("http://localhost:3001/api/produtos", {produto})
+        axios.post("http://localhost:3001/api/produtos", {produto},
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        )
             .then(
                 res => {
                     alert(res.data.message)
@@ -300,7 +352,7 @@ export const Cardapio = ({restauranteId}) => {
                 {
                     cardapio ? cardapio.map(
                         (item, i) => 
-                            item.categoria === "salgado"?
+                            usuario.tipo === "restaurante" && !item.status  && item.categoria === "salgado" ?
                             (<>
                                 <ListItem disablePadding key={i}>
                                     <ListItemText 
@@ -325,7 +377,7 @@ export const Cardapio = ({restauranteId}) => {
                                                             variant="body"
                                                             color="text.primary"
                                                         >
-                                                            R${item.preco}
+                                                            {item.preco}
                                                         </Typography>
                                                     </Col>
                                                 </Row>
@@ -339,7 +391,6 @@ export const Cardapio = ({restauranteId}) => {
                                                                 label="Un"
                                                                 defaultValue={item.un}
                                                                 onChange={({target}) => {
-                                                                    console.log(target.value)
                                                                     for(let j = 0; j < cardapio.length; j++){
                                                                         //Encontra index do prod a alterar
                                                                         if(cardapio[j]._id === item._id){
@@ -366,107 +417,91 @@ export const Cardapio = ({restauranteId}) => {
                                                                 )
                                                             }
                                                         </Box>
-                                                    ): usuario.id && usuario.tipo === "restaurante"? (
+                                                    ): usuario.id && usuario.tipo === "restaurante" && !editandoProduto ? (
                                                         <Box component="div" sx={{ my: 2, display: "flex", justifyContent: "right" }}>
                                                             <Button variant="outlined" size="small" sx={{mx: 1}} onClick={
                                                                 () => {
                                                                     console.log(item)
                                                                     if(window.confirm(`Tem certeza que deseja apagar ${item.nome}?`)){
-                                                                        axios.delete("http://localhost:3001/api/produtos/"+item._id)
+                                                                        axios.delete("http://localhost:3001/api/produtos/"+item._id,
+                                                                            {
+                                                                                headers: {
+                                                                                    'Authorization': `Bearer ${token}`
+                                                                                }
+                                                                            }
+                                                                        )
                                                                             .then(
                                                                                 res => {
-                                                                                    console.log(res)
+                                                                                    if(res && res.data){
+                                                                                        alert(res.data.message);
+                                                                                        setCarregando(true);
+                                                                                    }
                                                                                 }
                                                                             )
                                                                             .catch(
                                                                                 err => console.log(err)
                                                                             )
-                                                                            .finally(
-                                                                                () => {
-                                                                                    axios.get("http://localhost:3001/api/produtos/"+usuario.id, {})
-                                                                                        .then(
-                                                                                            res => {
-                                                                                                if(res && res.data){
-                                                                                                    setCardapio(res.data.produtos);
-                                                                                                }
-                                                                                                setCarregando(false)
-                                                                                            }
-                                                                                        )
-                                                                                        .catch(err => {//TODO
-                                                                                            console.log("NAO deu certo")
-                                                                                            setCarregando(false)
-                                                                                        }
-                                                                                    )
-                                                                                }
-                                                                            )
+                                                                            
                                                                     }
                                                                 }
                                                                 }>
                                                                 Apagar
                                                             </Button>
-                                                            <Button variant="outlined" size="small" sx={{mx: 1}} onClick={
-                                                                () => {//SEM SUPORTE NA API
-                                                                    console.log(item)
-                                                                    axios.put("http://localhost:3001/api/produtos/"+item._id)
-                                                                        .then(
-                                                                            res => {
-                                                                                console.log(res)
-                                                                            }
-                                                                        )
-                                                                        .catch(
-                                                                            err => console.log(err)
-                                                                        )
-                                                                        .finally(
-                                                                            () => {
-                                                                                axios.get("http://localhost:3001/api/produtos/"+usuario.id, {})
-                                                                                    .then(
-                                                                                        res => {
-                                                                                            if(res && res.data){
-                                                                                                setCardapio(res.data.produtos);
-                                                                                            }
-                                                                                            setCarregando(false)
+                                                            {    
+                                                                item.status?
+                                                                    <Button variant="outlined" size="small" sx={{mx: 1}} onClick={
+                                                                        () => {
+                                                                            axios.put("http://localhost:3001/api/produtos/status/"+item._id, {status: !item.status},
+                                                                                {
+                                                                                    headers: {
+                                                                                        'Authorization': `Bearer ${token}`
+                                                                                    }
+                                                                                }
+                                                                            )
+                                                                                .then(
+                                                                                    res => {
+                                                                                        if(res && res.data){
+                                                                                            alert(res.data.message);
+                                                                                            setCarregando(true);
                                                                                         }
-                                                                                    )
-                                                                                    .catch(err => {//TODO
-                                                                                        console.log("NAO deu certo")
-                                                                                        setCarregando(false)
                                                                                     }
                                                                                 )
+                                                                                .catch(
+                                                                                    err => console.log(err)
+                                                                                )
+                                                                        }
+                                                                        }>
+                                                                        Desativar
+                                                                    </Button>
+                                                                :<Button variant="outlined" size="small" sx={{mx: 1}} onClick={
+                                                                    () => {
+                                                                        axios.put("http://localhost:3001/api/produtos/status/"+item._id, {status: !item.status},
+                                                                            {
+                                                                                headers: {
+                                                                                    'Authorization': `Bearer ${token}`
+                                                                                }
                                                                             }
                                                                         )
-                                                                }
-                                                                }>
-                                                                Desativar
-                                                            </Button>
-                                                            <Button variant="contained" size="small" sx={{mx: 1}} onClick={
-                                                                    () => {//SEM SUPORTE NA API
-                                                                        axios.put("http://localhost:3001/api/produtos/editar"+item._id)
                                                                             .then(
                                                                                 res => {
-                                                                                    console.log(res)
+                                                                                    if(res && res.data){
+                                                                                        alert(res.data.message);
+                                                                                        setCarregando(true);
+                                                                                    }
                                                                                 }
                                                                             )
                                                                             .catch(
                                                                                 err => console.log(err)
                                                                             )
-                                                                            .finally(
-                                                                                () => {
-                                                                                    axios.get("http://localhost:3001/api/produtos/"+usuario.id, {})
-                                                                                        .then(
-                                                                                            res => {
-                                                                                                if(res && res.data){
-                                                                                                    setCardapio(res.data.produtos);
-                                                                                                }
-                                                                                                setCarregando(false)
-                                                                                            }
-                                                                                        )
-                                                                                        .catch(err => {//TODO
-                                                                                            console.log("NAO deu certo")
-                                                                                            setCarregando(false)
-                                                                                        }
-                                                                                    )
-                                                                                }
-                                                                            )
+                                                                    }
+                                                                    }>
+                                                                    Ativar
+                                                                </Button>
+                                                            }
+                                                            <Button variant="contained" size="small" sx={{mx: 1}} onClick={
+                                                                    () => {
+                                                                        setEditandoProduto(item);
+                                                                        setId(item.id);//?
                                                                     }
                                                                 }>
                                                                 Editar
@@ -480,7 +515,168 @@ export const Cardapio = ({restauranteId}) => {
                                     </ListItem>
                                 <Divider/>
                             </>)
-                            :<></>
+                            : item.categoria === "salgado" && item.status ?
+                            (<>
+                                <ListItem disablePadding key={i}>
+                                    <ListItemText 
+                                        primary={item.nome}
+                                        secondary={
+                                            <div>
+                                                <Row>
+                                                    <Col xxxl={8} xxl={8} xl={8} lg={8} md={12} sm={12}>
+                                                        <Typography
+                                                            sx={{ display: 'inline' }}
+                                                            component="span"
+                                                            variant="body"
+                                                            color="text.primary"
+                                                        >
+                                                            {item.descricao}
+                                                        </Typography>
+                                                    </Col>
+                                                    <Col xxxl={4} xxl={4} xl={4} lg={4} md={12} sm={12} textAlign="right">
+                                                        <Typography
+                                                            sx={{ textAlign: "end" }}
+                                                            component="p"
+                                                            variant="body"
+                                                            color="text.primary"
+                                                        >
+                                                            {item.preco}
+                                                        </Typography>
+                                                    </Col>
+                                                </Row>
+                                                {
+                                                    usuario.tipo !== "restaurante" && comanda.comandaId && comanda.restauranteId === restauranteId? (
+                                                        <Box component="div" sx={{ my: 2, display: "flex", justifyContent: "right" }}>
+                                                            <TextField
+                                                                fullWidth
+                                                                required
+                                                                id="outlined-required"
+                                                                label="Un"
+                                                                defaultValue={item.un}
+                                                                onChange={({target}) => {
+                                                                    for(let j = 0; j < cardapio.length; j++){
+                                                                        //Encontra index do prod a alterar
+                                                                        if(cardapio[j]._id === item._id){
+                                                                            //add prop
+                                                                            cardapio[j].un = target.value
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                    setCardapio(cardapio);
+                                                                }}
+                                                                type="number"
+                                                                size="small"
+                                                                margin="dense"
+                                                            />
+                                                            {
+                                                                item && item?.selecionado ? 
+                                                                (<Button variant="outlined" size="small" onClick={() => cancelar(item)}>
+                                                                    Cancelar
+                                                                </Button>):
+                                                                (
+                                                                    <Button variant="outlined" size="small" onClick={() => pedir(item)}>
+                                                                        Pedir
+                                                                    </Button>
+                                                                )
+                                                            }
+                                                        </Box>
+                                                    ): usuario.id && usuario.tipo === "restaurante" && !editandoProduto ? (
+                                                        <Box component="div" sx={{ my: 2, display: "flex", justifyContent: "right" }}>
+                                                            <Button variant="outlined" size="small" sx={{mx: 1}} onClick={
+                                                                () => {
+                                                                    if(window.confirm(`Tem certeza que deseja apagar ${item.nome}?`)){
+                                                                        axios.delete("http://localhost:3001/api/produtos/"+item._id,
+                                                                            {
+                                                                                headers: {
+                                                                                    'Authorization': `Bearer ${token}`
+                                                                                }
+                                                                            }
+                                                                        )
+                                                                            .then(
+                                                                                res => {
+                                                                                    if(res && res.data){
+                                                                                        alert(res.data.message);
+                                                                                        setCarregando(true);
+                                                                                    }
+                                                                                }
+                                                                            )
+                                                                            .catch(
+                                                                                err => console.log(err)
+                                                                            )
+                                                                            
+                                                                    }
+                                                                }
+                                                                }>
+                                                                Apagar
+                                                            </Button>
+                                                            {    
+                                                                item.status?
+                                                                    <Button variant="outlined" size="small" sx={{mx: 1}} onClick={
+                                                                        () => {
+                                                                            axios.put("http://localhost:3001/api/produtos/status/"+item._id, {status: !item.status},
+                                                                                {
+                                                                                    headers: {
+                                                                                        'Authorization': `Bearer ${token}`
+                                                                                    }
+                                                                                }
+                                                                            )
+                                                                                .then(
+                                                                                    res => {
+                                                                                        if(res && res.data){
+                                                                                            alert(res.data.message);
+                                                                                            setCarregando(true);
+                                                                                        }
+                                                                                    }
+                                                                                )
+                                                                                .catch(
+                                                                                    err => console.log(err)
+                                                                                )
+                                                                        }
+                                                                        }>
+                                                                        Desativar
+                                                                    </Button>
+                                                                :<Button variant="outlined" size="small" sx={{mx: 1}} onClick={
+                                                                    () => {
+                                                                        axios.put("http://localhost:3001/api/produtos/status/"+item._id, {status: !item.status},
+                                                                            {
+                                                                                headers: {
+                                                                                    'Authorization': `Bearer ${token}`
+                                                                                }
+                                                                            }
+                                                                        )
+                                                                            .then(
+                                                                                res => {
+                                                                                    if(res && res.data){
+                                                                                        alert(res.data.message);
+                                                                                        setCarregando(true);
+                                                                                    }
+                                                                                }
+                                                                            )
+                                                                            .catch(
+                                                                                err => console.log(err)
+                                                                            )
+                                                                    }
+                                                                    }>
+                                                                    Ativar
+                                                                </Button>
+                                                            }
+                                                            <Button variant="contained" size="small" sx={{mx: 1}} onClick={
+                                                                    () => {
+                                                                        setEditandoProduto(item);
+                                                                        setId(item.id);//?
+                                                                    }
+                                                                }>
+                                                                Editar
+                                                            </Button>
+                                                        </Box>
+                                                    ): null
+                                                }
+                                            </div>
+                                        }
+                                        />
+                                    </ListItem>
+                                <Divider/>
+                            </>): <></>
                     ): null
                 }
             </List>
@@ -520,7 +716,7 @@ export const Cardapio = ({restauranteId}) => {
                                                             variant="body"
                                                             color="text.primary"
                                                         >
-                                                            R${item.preco}
+                                                            {item.preco}
                                                         </Typography>
                                                     </Col>
                                                 </Row>
@@ -585,28 +781,97 @@ export const Cardapio = ({restauranteId}) => {
                                                                 )
                                                             }
                                                         </Box>
-                                                    ): usuario.id && usuario.tipo === "restaurante" ? (
+                                                    ): usuario.id && usuario.tipo === "restaurante" && !editandoProduto ? (
                                                         <Box component="div" sx={{ my: 2, display: "flex", justifyContent: "right" }}>
-                                                            <Button variant="outlined" size="small" sx={{mx: 1}} onClick={() => cancelar(item)}>
-                                                                Apagar
-                                                            </Button>
                                                             <Button variant="outlined" size="small" sx={{mx: 1}} onClick={
                                                                 () => {
-                                                                    console.log(`Desativa ${item.nome}`)
+                                                                    console.log(item)
+                                                                    if(window.confirm(`Tem certeza que deseja apagar ${item.nome}?`)){
+                                                                        axios.delete("http://localhost:3001/api/produtos/"+item._id,
+                                                                            {
+                                                                                headers: {
+                                                                                    'Authorization': `Bearer ${token}`
+                                                                                }
+                                                                            }
+                                                                        )
+                                                                            .then(
+                                                                                res => {
+                                                                                    if(res && res.data){
+                                                                                        alert(res.data.message);
+                                                                                        setCarregando(true);
+                                                                                    }
+                                                                                }
+                                                                            )
+                                                                            .catch(
+                                                                                err => console.log(err)
+                                                                            )
+                                                                            
+                                                                    }
                                                                 }
                                                                 }>
-                                                                Desativar
+                                                                Apagar
                                                             </Button>
+                                                            {    
+                                                                item.status?
+                                                                    <Button variant="outlined" size="small" sx={{mx: 1}} onClick={
+                                                                        () => {
+                                                                            axios.put("http://localhost:3001/api/produtos/status/"+item._id, {status: !item.status},
+                                                                                {
+                                                                                    headers: {
+                                                                                        'Authorization': `Bearer ${token}`
+                                                                                    }
+                                                                                }
+                                                                            )
+                                                                                .then(
+                                                                                    res => {
+                                                                                        if(res && res.data){
+                                                                                            alert(res.data.message);
+                                                                                            setCarregando(true);
+                                                                                        }
+                                                                                    }
+                                                                                )
+                                                                                .catch(
+                                                                                    err => console.log(err)
+                                                                                )
+                                                                        }
+                                                                        }>
+                                                                        Desativar
+                                                                    </Button>
+                                                                :<Button variant="outlined" size="small" sx={{mx: 1}} onClick={
+                                                                    () => {
+                                                                        axios.put("http://localhost:3001/api/produtos/status/"+item._id, {status: !item.status},
+                                                                            {
+                                                                                headers: {
+                                                                                    'Authorization': `Bearer ${token}`
+                                                                                }
+                                                                            }
+                                                                        )
+                                                                            .then(
+                                                                                res => {
+                                                                                    if(res && res.data){
+                                                                                        alert(res.data.message);
+                                                                                        setCarregando(true);
+                                                                                    }
+                                                                                }
+                                                                            )
+                                                                            .catch(
+                                                                                err => console.log(err)
+                                                                            )
+                                                                    }
+                                                                    }>
+                                                                    Ativar
+                                                                </Button>
+                                                            }
                                                             <Button variant="contained" size="small" sx={{mx: 1}} onClick={
-                                                                () => {
-                                                                    console.log(`Edita ${item.nome}`)
-                                                                    //abre modal e carrega produto?
-                                                                }
+                                                                    () => {
+                                                                        setEditandoProduto(item);
+                                                                        setId(item.id);//?
+                                                                    }
                                                                 }>
                                                                 Editar
                                                             </Button>
                                                         </Box>
-                                                    ):null
+                                                    ): null
                                                 }
                                             </div>
                                         }
@@ -654,7 +919,7 @@ export const Cardapio = ({restauranteId}) => {
                                                             variant="body"
                                                             color="text.primary"
                                                         >
-                                                            R${item.preco}
+                                                            {item.preco}
                                                         </Typography>
                                                     </Col>
                                                 </Row>
@@ -694,43 +959,97 @@ export const Cardapio = ({restauranteId}) => {
                                                                 )
                                                             }
                                                         </Box>
-                                                    ): usuario.id && usuario.tipo === "restaurante" ? (
+                                                    ): usuario.id && usuario.tipo === "restaurante" && !editandoProduto ? (
                                                         <Box component="div" sx={{ my: 2, display: "flex", justifyContent: "right" }}>
                                                             <Button variant="outlined" size="small" sx={{mx: 1}} onClick={
                                                                 () => {
                                                                     console.log(item)
                                                                     if(window.confirm(`Tem certeza que deseja apagar ${item.nome}?`)){
-                                                                        axios.delete("http://localhost:3001/api/produtos/"+item._id)
+                                                                        axios.delete("http://localhost:3001/api/produtos/"+item._id,
+                                                                            {
+                                                                                headers: {
+                                                                                    'Authorization': `Bearer ${token}`
+                                                                                }
+                                                                            }
+                                                                        )
                                                                             .then(
                                                                                 res => {
-                                                                                    console.log(res)
+                                                                                    if(res && res.data){
+                                                                                        alert(res.data.message);
+                                                                                        setCarregando(true);
+                                                                                    }
+                                                                                }
+                                                                            )
+                                                                            .catch(
+                                                                                err => console.log(err)
+                                                                            )
+                                                                            
+                                                                    }
+                                                                }
+                                                                }>
+                                                                Apagar
+                                                            </Button>
+                                                            {    
+                                                                item.status?
+                                                                    <Button variant="outlined" size="small" sx={{mx: 1}} onClick={
+                                                                        () => {
+                                                                            axios.put("http://localhost:3001/api/produtos/status/"+item._id, {status: !item.status},
+                                                                                {
+                                                                                    headers: {
+                                                                                        'Authorization': `Bearer ${token}`
+                                                                                    }
+                                                                                }
+                                                                            )
+                                                                                .then(
+                                                                                    res => {
+                                                                                        if(res && res.data){
+                                                                                            alert(res.data.message);
+                                                                                            setCarregando(true);
+                                                                                        }
+                                                                                    }
+                                                                                )
+                                                                                .catch(
+                                                                                    err => console.log(err)
+                                                                                )
+                                                                        }
+                                                                        }>
+                                                                        Desativar
+                                                                    </Button>
+                                                                :<Button variant="outlined" size="small" sx={{mx: 1}} onClick={
+                                                                    () => {
+                                                                        axios.put("http://localhost:3001/api/produtos/status/"+item._id, {status: !item.status},
+                                                                            {
+                                                                                headers: {
+                                                                                    'Authorization': `Bearer ${token}`
+                                                                                }
+                                                                            }
+                                                                        )
+                                                                            .then(
+                                                                                res => {
+                                                                                    if(res && res.data){
+                                                                                        alert(res.data.message);
+                                                                                        setCarregando(true);
+                                                                                    }
                                                                                 }
                                                                             )
                                                                             .catch(
                                                                                 err => console.log(err)
                                                                             )
                                                                     }
-                                                                }
-                                                                }>
-                                                                Apagar
-                                                            </Button>
-                                                            <Button variant="outlined" size="small" sx={{mx: 1}} onClick={
-                                                                () => {
-                                                                    console.log(`Desativa ${item.nome}`)
-                                                                }
-                                                                }>
-                                                                Desativar
-                                                            </Button>
+                                                                    }>
+                                                                    Ativar
+                                                                </Button>
+                                                            }
                                                             <Button variant="contained" size="small" sx={{mx: 1}} onClick={
-                                                                () => {
-                                                                    console.log(`Edita ${item.nome}`)
-                                                                    //abre modal e carrega produto?
-                                                                }
+                                                                    () => {
+                                                                        setEditandoProduto(item);
+                                                                        setId(item.id);//?
+                                                                    }
                                                                 }>
                                                                 Editar
                                                             </Button>
                                                         </Box>
-                                                    ) : null
+                                                    ): null
                                                 }
                                             </div>
                                         }
@@ -756,7 +1075,7 @@ export const Cardapio = ({restauranteId}) => {
             }
         </div>
         {
-            usuario.tipo === "restaurante" ? (
+            usuario.tipo === "restaurante" && !editandoProduto ? (
                 <form style={{margin: "1.2rem 0"}} onSubmit={submeter}>
                     <Typography variant='h3' component="h1">
                         Adicionar
@@ -814,9 +1133,73 @@ export const Cardapio = ({restauranteId}) => {
                         </Col>
                     </Row>
                 </form>
-            ):(
-                <></>
-            )
+            ): usuario.tipo === "restaurante" && editandoProduto ?(
+                <form style={{margin: "1.2rem 0"}} onSubmit={atualizaProduto} id='formEdicao'>
+                    <Typography variant='h3' component="h1">
+                        Editar produto
+                    </Typography>
+                    <div style={{display: "block"}}>
+                        {`inputValue: '${JSON.stringify(editandoProduto)}'`}
+                    </div>
+                    <Row>
+                        <Col>
+                            <TextField
+                                fullWidth
+                                required
+                                id="outlined-required"
+                                label="Nome"
+                                defaultValue={editandoProduto.nome}
+                                onChange={({target}) => {setNome(target.value); console.log(target.value); console.log(produto)}}
+                                onBlur={({target}) => setNome(target.value)}
+                                size="small"
+                                margin="dense"
+                            />
+                            <TextField
+                                fullWidth
+                                required
+                                id="outlined-required"
+                                label="Descrição"
+                                defaultValue={editandoProduto.descricao}
+                                onChange={({target}) => {setDescricao(target.value); console.log(target.value)}}
+                                onBlur={({target}) => setDescricao(target.value)}
+                                size="small"
+                                multiline
+                                rows={4}
+                                margin="dense"
+                            />
+                        </Col>
+                        <Col>
+                            <TextField
+                                fullWidth
+                                required
+                                id="outlined-required"
+                                label="Preço"
+                                defaultValue={editandoProduto.preco}
+                                onChange={({target}) => setPreco(target.value)}
+                                onBlur={({target}) => setPreco(target.value)}
+                                size="small"
+                                margin="dense"
+                            />
+                            <GrupoRadio 
+                                opcoes={opcoes}  
+                                onChange={setCategoria} 
+                            />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <Button variant="contained" type='submit'>
+                                Atualizar produto
+                            </Button>
+                        </Col>
+                        <Col>
+                            <Button variant="outlined" onClick={() => cancelarAtualizacao()}>
+                                Cancelar
+                            </Button>
+                        </Col>
+                    </Row>
+                </form>
+            ):<></>
         }
         {
             usuario.tipo !== "restaurante" && comanda.comandaId && comanda.restauranteId === restauranteId ? (

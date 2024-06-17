@@ -15,13 +15,10 @@ export const Login = () => {
 
     const entrar = (event) => {
         event.preventDefault();
-        console.log(login)
 
         axios.post("http://localhost:3001/api/aut/login", {login})
             .then(
                 res => {
-                    console.log("OK, CHAOS!")
-                    console.log(res);
                     localStorage.setItem("token", res.data.token)
                     localStorage.setItem("usuario", res.data.usuario.email)
                     if(res){

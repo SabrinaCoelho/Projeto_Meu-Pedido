@@ -1,7 +1,17 @@
+import * as React from 'react';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+
 import { Typography } from '@mui/material';
-import { useEffect, useState } from "react"
-import axios from "axios"
-import { useCadastroUsuarioContext } from "../../contexto/CadastroUsuario"
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useCadastroUsuarioContext } from "../../contexto/CadastroUsuario";
+import ComandaFechadaModal from '../../componentes/ComandaFechadaModal/ComandaFechadaModal';
 
 export const HistoricoAtendimentos = () => {
     /* const atendimentos = [
@@ -100,40 +110,80 @@ export const HistoricoAtendimentos = () => {
     ) */
     
     const [carregando, setCarregando] = useState(true)
+    const [comandas, setComandas] = useState(null)
+    const usuarioEmail = localStorage.getItem("usuario");
+    const token = localStorage.getItem("token");
+    
     const { 
-        usuario, 
-        
+        usuario
     } = useCadastroUsuarioContext()
     //Busca todos os atendimentos
     useEffect(
         () => {
             if(usuario.tipo === "cliente"){
-                axios.get("http://localhost:3001/api/atendimentos/"+usuario.email, {})//TODO - Mudar pro ID do cliente
+                //axios.get("http://localhost:3001/api/atendimentos/"+usuario.email, {})//TODO - Mudar pro ID do cliente
+                axios.get("http://localhost:3001/api/comandas-fechadas-cliente/"+usuario.id,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    }
+                )//TODO - Mudar pro ID do cliente
                     .then(
                         res => {
-                            console.log(res.data.atendimentos);
-                            setCarregando(false)
+                            // console.log(res.data);
+                            const {comandas} = res.data;
+                            setComandas(comandas);
+                            setCarregando(false);
                         }
                     )
                     .catch(err => {//TODO
                         setCarregando(false)
-                        alert(err.message);
-                        console.log("NAO deu certo")
+                        console.log(err)
                     }
 
                 )
             }else if(usuario.tipo === "atendente"){
-                console.log(usuario)
-                axios.get(`http://localhost:3001/api/comandas-fechadas/${usuario.id}`)
+                axios.get(`http://localhost:3001/api/comandas-fechadas-atendente/${usuario.id}`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    }
+                )
                     .then(
                         res => {
-                            console.log(res.data);
-                            setCarregando(false)
+                            // console.log(res.data);
+                            const {comandas} = res.data;
+                            setComandas(comandas);
+                            setCarregando(false);
                         }
                     )
                     .catch(err => {//TODO
                         setCarregando(false)
-                        console.log("NAO deu certo")
+                        console.log(err)
+                    }
+
+                )
+            }else if(usuario.tipo === "restaurante"){
+                axios.get(`http://localhost:3001/api/comandas-fechadas-restaurante/${usuario.id}`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    }
+                )
+                    .then(
+                        res => {
+                            console.log(res.data);
+                            const {comandas} = res.data;
+                            setComandas(comandas);
+                            setCarregando(false);
+                        }
+                    )
+                    .catch(err => {//TODO
+                        setCarregando(false)
+                        console.log(err)
                     }
 
                 )
@@ -142,8 +192,39 @@ export const HistoricoAtendimentos = () => {
         },[carregando]
     )
     return(
-        <Typography variant="h1" component="h1">
-            Falta plotar(atendente)
-        </Typography>
+        <>
+            {   comandas ? 
+                <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <TableHead>
+                        <TableRow>
+                            <TableCell>N°</TableCell>
+                            <TableCell align="right">Cliente</TableCell>
+                            <TableCell align="right">Ação</TableCell>
+                        </TableRow>
+                        </TableHead>
+                        <TableBody>
+                        {comandas.map((comanda) => (
+                            <TableRow>
+                                <TableCell component="th" scope="row">
+                                    {comanda.comandaId}
+                                </TableCell>
+                                <TableCell align="right">{comanda.cliente}</TableCell>
+                                <TableCell align="right">
+                                    <ComandaFechadaModal comandaDados={comanda}/>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                : 
+                <>
+                    <Typography component="body">
+                        Você ainda não possui comandas!
+                    </Typography>
+                </>
+            }
+        </>
     )
 }

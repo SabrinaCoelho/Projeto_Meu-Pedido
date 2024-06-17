@@ -61,6 +61,7 @@ export const LayoutBasePerfil = () => {
         setCnpj,
         setEndereco,
         setInformacoes,
+        setAtivo,
     } = useCadastroUsuarioContext()
     
     const usuarioEmail = localStorage.getItem("usuario");
@@ -68,21 +69,20 @@ export const LayoutBasePerfil = () => {
 
     useEffect(
         () => {
-            /* if(isConnected){
-            if(usuario.tipo === "restaurante"){
-                    socket.timeout(10000).emit("restaurante_logado", {usuarioId: usuario.id});
-                }else{
-                    socket.timeout(10000).emit("atualiza_socket", {usuarioId: usuario.id});
-                }
-            } */
             if(isConnected){
                 let filtro = usuario.tipo === "cliente" ? usuario.email : usuario.id
-                axios.get(`http://localhost:3001/api/comandas_relacionadas/`+ filtro)
+                axios.get(`http://localhost:3001/api/comandas_relacionadas/`+ filtro,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    }
+                )
                     .then(
                         res => {
                             if(res && res.data){
                                 const {comandas} = res.data;
-                                if(usuario.tipo === "atendente"){
+                                if(usuario.tipo & usuario.ativo === "atendente"){
                                     socket.emit("online", {
                                         query: {
                                             comandas,
@@ -104,8 +104,7 @@ export const LayoutBasePerfil = () => {
                         }
                     )
                     .catch(err => {//TODO
-                        console.log(err.message);
-                        console.log("NAO deu certo");
+                        console.log(err.response.data.message);
                     }
 
                 )
@@ -122,10 +121,8 @@ export const LayoutBasePerfil = () => {
                 })
                 .then(
                     res => {
-                        console.log("OK, CHAOS!")
-                        console.log(res.data);
                         if(res && res.data){
-                            const {nome, email, tipo, id,telefone, cnpj, endereco, restauranteId, informacoes} = res.data.usuario;
+                            const {nome, email, tipo, id, telefone, cnpj, endereco, restauranteId, informacoes, ativo} = res.data.usuario;
                             setNome(nome);
                             setEmail(email);
                             setTipo(tipo);
@@ -134,11 +131,12 @@ export const LayoutBasePerfil = () => {
                             setCnpj(cnpj);
                             setEndereco(endereco);
                             setInformacoes(informacoes);
-                            setRestauranteId(restauranteId)
+                            setAtivo(ativo);
+                            setRestauranteId(restauranteId);
                             // console.log(usuario)
                             // if(tipo === "restaurante"){
                                 // if(!socket.connected){//TODO melhorar isso aqui
-                                    connect();
+                                    connect();//VERIFICAR URGENTE 15/06
                                 // }
                             // }
                         }
@@ -146,6 +144,7 @@ export const LayoutBasePerfil = () => {
                 )
                 .catch(err => {//TODO
                     console.log("NAO deu certo")
+                    console.log(err)
                     alert(err.response.data.message);
                 }
 
@@ -179,9 +178,9 @@ export const LayoutBasePerfil = () => {
             {
                 texto: "Pedidos",
                 link: "/perfil/pedidos"
-            },
+            }
         ]
-    }else if(usuario.tipo == "atendente"){
+    }else if(usuario.tipo == "atendente" && usuario.ativo){
         itens = [
             {
                 texto: "Atualizar cadastro",
@@ -199,8 +198,12 @@ export const LayoutBasePerfil = () => {
                 texto: "Comandas em andamento",
                 link: "/perfil/comandas-em-andamento"
             },
+            {
+                texto: "Gerar código",
+                link: "/perfil/gerar-codigo"
+            }
         ]
-    }else{//cliente
+    }else if(usuario.tipo == "cliente"){//cliente
         itens = [
             {
                 texto: "Atualizar cadastro",
@@ -220,7 +223,6 @@ export const LayoutBasePerfil = () => {
             },
         ]
     }
-
     return(
         <MenuLateral itensMenu={itens}>
             <Outlet/>

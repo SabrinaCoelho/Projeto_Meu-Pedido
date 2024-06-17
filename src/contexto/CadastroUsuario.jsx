@@ -14,7 +14,8 @@ const usuarioInicial = {
     cnpj: '',
     endereco: '',
     telefone: '',
-    informacoes: ''
+    informacoes: '',
+    ativo: false
 }
 
 export const useCadastroUsuarioContext = () => {
@@ -33,6 +34,7 @@ export const CadastroUsuarioContext = createContext({
     setCnpj: () => null,
     setEndereco: () => null,
     setTelefone: () => null,
+    setAtivo: () => null,
     setInformacoes: () => null,
     setSenhaConfirmada: () => null,
     submeterUsuario: () => null,
@@ -57,11 +59,18 @@ export const CadastroUsuarioProvider = ({ children }) => {
     }
     
     const setTipo = (tipo) => {
-        console.log("----------------", tipo)
         setUsuario(estadoAnterior => {
             return {
                 ...estadoAnterior,
                 tipo
+            }
+        })
+    }
+    const setAtivo = (ativo) => {
+        setUsuario(estadoAnterior => {
+            return {
+                ...estadoAnterior,
+                ativo
             }
         })
     }
@@ -140,20 +149,16 @@ export const CadastroUsuarioProvider = ({ children }) => {
 
     const submeterUsuario = () => {
         
-        console.log(usuario)
         axios.post("http://localhost:3001/api/aut/registro", {usuario})
             .then(
                 res => {
-                    console.log("OK, CHAOS!")
-                    console.log(res);
-                    if(res){
+                    if(res && res.data){
                         navegar("/login")
                     }
                 }
             )
             .catch(err => {//TODO
-                console.log(err.message)
-                console.log("NAO deu certo")
+                console.log(err.response.data.message);
             }
 
         )
@@ -179,6 +184,7 @@ export const CadastroUsuarioProvider = ({ children }) => {
         setSenhaConfirmada,
         setInformacoes,
         submeterUsuario,
+        setAtivo
         //possoSelecionarInteresse
     }
 

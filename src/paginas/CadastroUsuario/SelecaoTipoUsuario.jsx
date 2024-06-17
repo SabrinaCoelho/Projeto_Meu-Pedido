@@ -9,10 +9,10 @@ const opcoes = [
         valor: "restaurante",
         label: 'Restaurante',
     },
-    {
+    /* {
         valor: "atendente",
         label: 'Atendente',
-    },
+    }, */
     {
         valor: "cliente",
         label: 'Cliente',

@@ -25,9 +25,11 @@ export const Atendimento = () => {
         comanda,
         setRestauranteId,
         setErros,
+        setCodigo,
         setAtendenteId,
         setAtendenteNome,
         setCliente,
+        setClienteId,
         setMesa,
         setComandaID,
         setInicio,
@@ -44,8 +46,10 @@ export const Atendimento = () => {
         event.preventDefault();
         const dataInicio = new Date();
         setInicio(dataInicio);
-        if(!comanda.cliente) setCliente(usuario.email)
-        console.log(comanda)
+        if((!comanda.cliente || !comanda.clienteId) && usuario.tipo === "cliente"){//Se estiver vazio -> cliente que esta iniciando
+            setCliente(usuario.email)
+            setClienteId(usuario.id)
+        }
         submeterComanda()
     }
     
@@ -58,16 +62,30 @@ export const Atendimento = () => {
                             <Col>
                                 {
                                     usuario.tipo === "cliente"?(
-                                        <TextField
-                                            fullWidth
-                                            id="outlined-required"
-                                            label="Cliente"
-                                            defaultValue={usuario.id}
-                                            type="text"
-                                            size="small"
-                                            margin="dense"
-                                            disabled="true"
-                                        />
+                                        <>
+                                            <TextField
+                                                fullWidth
+                                                id="outlined-required"
+                                                label="Cliente"
+                                                defaultValue={usuario.id}
+                                                type="text"
+                                                size="small"
+                                                margin="dense"
+                                                disabled="true"
+                                            />
+                                            
+                                            <TextField
+                                                fullWidth
+                                                required
+                                                id="outlined-required"
+                                                label="Código"
+                                                onChange={({target}) => setCodigo(target.value)}
+                                                onBlur={({target}) => setCodigo(target.value)}
+                                                type="text"
+                                                size="small"
+                                                margin="dense"
+                                            />
+                                        </>
                                     ): usuario.tipo === "atendente" ? (
                                         <TextField
                                             fullWidth

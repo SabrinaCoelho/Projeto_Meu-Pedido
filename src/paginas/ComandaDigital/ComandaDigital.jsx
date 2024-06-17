@@ -14,35 +14,10 @@ export const ComandaDigital = () => {
     const [ itemCancelado, setItemCancelado ] = useState();
     
     const { socket } = useSocketContext();
-    const comandaPedidos = {//TODO
-        total: "30,00"
-    }
-    const pedidos = [
-        {
-            id: "",
-            comanda: "",
-            atendente: "Rohan",
-            hora: "10:06:10",
-            data: "10/05/2024",
-            total: "30,00",
-            itens: [
-                {
-                    nome: "Bolo de laranja",
-                    descricao: "Bolo de laranja. Contém glútem, derivados de leite, ovos, e laranja.",
-                    un: "1",
-                    preco: "25,00",
-                    ativo: "true"
-                },
-                {
-                    nome: "Suco de laranja 400ml",
-                    descricao: "Contém laranja.",
-                    un: "1",
-                    preco: "5,00",
-                    ativo: "true"
-                }
-            ]
-        }
-    ]
+    
+    const usuarioEmail = localStorage.getItem("usuario");
+    const token = localStorage.getItem("token");
+    
     const {
         comanda,
         setTotal,
@@ -60,63 +35,82 @@ export const ComandaDigital = () => {
     }
     useEffect(
         () => {
-            console.log(comanda)
-            axios.get("http://localhost:3001/api/comandas/"+comanda.comandaId, {})
-            .then(
-                res => {
-                    const { comanda } = res.data;
-                    setComandaDaVez(comanda);//TODO
-                    if(usuario.tipo === "cliente"){
-                        /* if(!socket.connected){//TODO melhorar isso aqui
-                            socket.connect();
-                        } */
-                        socket.emit("acessa_comanda", {
-                            comandaId: comanda.comandaId,
-                            usuarioId: usuario.id,
-                            restauranteId: comanda.restauranteId
-                        })
+            axios.get("http://localhost:3001/api/comandas/"+comanda.comandaId, 
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
                     }
-                    setCarregando(false)
                 }
             )
-            .catch(err => {//TODO
-                console.log("NAO deu certo")
-                setCarregando(false)
-            }
+                .then(
+                    res => {
+                        const { comanda } = res.data;
+                        setComandaDaVez(comanda);//TODO
+                        if(usuario.tipo === "cliente"){
+                            /* if(!socket.connected){//TODO melhorar isso aqui
+                                socket.connect();
+                            } */
+                            socket.emit("acessa_comanda", {
+                                comandaId: comanda.comandaId,
+                                usuarioId: usuario.id,
+                                restauranteId: comanda.restauranteId
+                            })
+                        }
+                        setCarregando(false)
+                    }
+                )
+                .catch(err => {//TODO
+                    console.log("NAO deu certo")
+                    setCarregando(false)
+                }
         )
         }, [carregando, comanda]
     )
     const cancelaItem = (item) => {
-        //TODO
-        const pedidoCancelado = {
-            comandaId: comanda.comandaId,
-            restauranteId: comanda.restauranteId
-        }
-        socket.emit("pedido_cancelado", pedidoCancelado)
+        //Atualiza total da comanda
+        let [,total] = comandaDaVez.total.split(/\s/);
+        total = parseFloat(total.replace(/,/, '.'));
+
+        let itemPreco = parseFloat(item.preco.split(/\s/)[1].replace(/,/, '.')) * parseInt(item.un);
+        total -= itemPreco;
+        //Formata e manda pro banco
+        let totalAtualizadoFormatado = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+        
         axios.put("http://localhost:3001/api/pedidos", {comandaDados: {
-            comandaId: comanda.comandaId,
-            restauranteId: comanda.restauranteId,
-            pedidoId: item.id
-        }})
+            comandaId: comandaDaVez.comandaId,
+            restauranteId: comandaDaVez.restauranteId,
+            pedidoId: item.id,
+            total: totalAtualizadoFormatado
+            }},
+            )
             .then(
                 res => {
                     if(res && res.data){
-                        console.log(res.data.pedido)
-                        setComandaDaVez(res.data.pedido)//TODO- Nao ta atualizando
+                        socket.emit("pedido_cancelado", {
+                            comandaId: comandaDaVez.comandaId,
+                            restauranteId: comandaDaVez.restauranteId,
+                            pedidoId: item.id
+                        })
+                        const {comandaAtualizada} = res.data;
+                        setComandaDaVez(comandaAtualizada);
                     }
                     setCarregando(false)
                 }
             )
             .catch(err => {//TODO
                 alert(err.response.data.message);
-            })
-        /* item.ativo = false
-        setItemCancelado(item) */
+            });
     }
     const finalizarAtendimento = () => {
         setTermino(new Date())
         console.log(comanda.termino)
-        axios.put("http://localhost:3001/api/comandas/finalizar/"+comanda.comandaId, {comanda})//TODO REVISAR
+        axios.put("http://localhost:3001/api/comandas/finalizar/"+comanda.comandaId, {comanda},
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        )
         .then(
             res => {
                 if(res && res.data && res.data.comandaFechada){
@@ -127,7 +121,7 @@ export const ComandaDigital = () => {
             }
         )
         .catch(err => {//TODO
-            console.log("NAO deu certo")
+            console.log(err)
             setCarregando(false)
         })
     }
@@ -141,33 +135,40 @@ export const ComandaDigital = () => {
                         </Col>
                         <Col>
                             <Typography variant="h5" component="h1">
-                                Comanda n° {comanda.comandaId}
+                                Comanda n° {comandaDaVez.comandaId}
                             </Typography>
                         </Col>
                     </Row>
                     <Row>
                         <Col>
                             <Typography variant="body" component="body">
-                                Cliente: {comanda.cliente}
+                                Cliente: {comandaDaVez.cliente}
                             </Typography>
                         </Col>
                     </Row>
                     <Row>
                         <Col>
                             <Typography variant="body" component="body">
-                                Mesa: {comanda.mesa}
+                                Mesa: {comandaDaVez.mesa}
                             </Typography>
                         </Col>
                     </Row>
                     <Row>
                         <Col>
                             <Typography variant="body" component="body">
-                                Atendente: {comanda.atendenteNome}
+                                Atendente: {comandaDaVez.atendenteNome}
+                            </Typography>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <Typography variant="body" component="body">
+                                Código de acesso: {comandaDaVez.codigo}
                             </Typography>
                         </Col>
                     </Row>
                         {
-                            comanda.pedidos.length ? comanda.pedidos.map(
+                            comandaDaVez.pedidos.length ? comandaDaVez.pedidos.map(
                                 (item, i) => (
                                     <Card variant="outlined" sx={{ minWidth: "100%" }} key={i}>
                                         <CardContent>
@@ -199,7 +200,7 @@ export const ComandaDigital = () => {
                                             </Container>
                                         </CardContent>
                                         {
-                                            item.ativo ? (
+                                            item.ativo && comandaDaVez.status === "aberto" ? (
                                                 <CardActions>
                                                     <Container>
                                                         <Row style={{justifyContent: "right"}}>
@@ -209,11 +210,13 @@ export const ComandaDigital = () => {
                                                         </Row>
                                                     </Container>
                                                 </CardActions>
-                                            ):(
-                                                <Typography component="body">
-                                                    Pedido cancelado
-                                                </Typography>
-                                            )
+                                            ): !item.ativo ? (
+                                                <CardActions>
+                                                    <Typography component="body">
+                                                        Pedido cancelado
+                                                    </Typography>
+                                                </CardActions>
+                                            ): <></>
                                         }
                                     </Card>
                                 )
@@ -230,12 +233,12 @@ export const ComandaDigital = () => {
                         </Col>
                         <Col>
                             <Typography variant="h5" component="h1">
-                                {comanda.total}
+                                {comandaDaVez.total}
                             </Typography>
                         </Col>
                     </Row>
                     {
-                        comanda.status === "aberto" ?(
+                        comandaDaVez.status === "aberto" ?(
                             <Row justify="between">
                                 {
                                     usuario.tipo === "atendente" || usuario.tipo === "restaurante" ?
@@ -249,11 +252,11 @@ export const ComandaDigital = () => {
                                 }
                                 <Col style={{marginLeft: "10px"}}>
                                     <Button variant="contained" onClick={() => {
-                                        if(usuario.id && comanda.comandaId){
-                                            navegar("/perfil/restaurantes/"+comanda.restauranteId) 
-                                        }else if(!usuario.id && comanda.comandaId){
+                                        if(usuario.id && comandaDaVez.comandaId){
+                                            navegar("/perfil/restaurantes/"+comandaDaVez.restauranteId) 
+                                        }else if(!usuario.id && comandaDaVez.comandaId){
                                             console.log("sem login")
-                                            navegar("/restaurantes/"+comanda.restauranteId) 
+                                            navegar("/restaurantes/"+comandaDaVez.restauranteId) 
                                         }
                                     }}>Cardápio</Button>
                                 </Col>

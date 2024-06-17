@@ -5,10 +5,14 @@ import { useLocation } from 'react-router-dom';
 import { useLoginContext } from "../../contexto/Login"
 import TextField from '@mui/material/TextField';
 import { Avatar, Button } from "@mui/material"
+import { useCadastroAtendenteContext } from "../../contexto/CadastroAtendente";
+import { useEffect } from "react";
+import axios from "axios";
 
-export const CadastroUsuario = () => {
+export const CadastroUsuario = ({addAtendente}) => {
+    const token = localStorage.getItem("token");
+
     const {pathname} = useLocation()
-
     const {
         login
     } = useLoginContext()
@@ -26,10 +30,28 @@ export const CadastroUsuario = () => {
         setInformacoes,
         submeterUsuario
     } = useCadastroUsuarioContext()
-    
+    const { 
+        atendente, 
+        setNomeAtendente, 
+        setTipoAtendente,
+        setRestauranteIdAtendente,
+        setEmailAtendente, 
+        setSenhaAtendente,
+        setSenhaConfirmadaAtendente,
+        submeterUsuarioAtendente,
+        resetAtendente,
+        setSubmetido,
+    } = useCadastroAtendenteContext()
+
+
+    useEffect(
+        () => {
+            setTipoAtendente("atendente");
+            setRestauranteIdAtendente(usuario.id);
+        }, [addAtendente]
+    );
     const finalizarCadastro = (evento) => {
         evento.preventDefault();
-        console.log(usuario)
         //submeterUsuario()
     }
     const atualizarCadastro = (evento) => {
@@ -37,17 +59,64 @@ export const CadastroUsuario = () => {
         submeterUsuario()
     }
 
+    const criarAtendente = () => {
+        //submeterUsuarioAtendente();
+        
+        axios.post("http://localhost:3001/api/aut/registro", {usuario: atendente})
+            .then(
+                res => {
+                    if(res && res.data){
+                        alert(res.data.message);
+                        // resetAtendente();
+                        setNomeAtendente("");
+                        setEmailAtendente("");
+                        setSenhaAtendente("");
+                        setSenhaConfirmadaAtendente("");
+                        setSubmetido(true)
+                        addAtendente = null;
+                    }
+                }
+            )
+            .catch(err => {//TODO
+                alert(err.response.data.message);
+            }
+        )
+    }
+    const atualizaCadastro = () => {
+        
+        axios.put("http://localhost:3001/api/aut/registro", {usuario},
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        )
+            .then(
+                res => {
+                    if(res && res.data){
+                        alert(res.data.message);
+                    }
+                }
+            )
+            .catch(err => {//TODO
+                alert(err.response.data.message);
+            }
+        )
+    }
     return (
         <Container>
-            <form onSubmit={true ? atualizarCadastro: finalizarCadastro}>
-                <Row justify="center" style={{margin: "1.2rem"}}>
-                    <Avatar
-                        alt={usuario.nome}
-                        src="/static/images/avatar/1.jpg"
-                        sx={{ width: 150, height: 150 }}
-                    />
-                </Row>
-                {usuario.tipo == "restaurante" ? 
+            <form onSubmit={true ? atualizarCadastro: finalizarCadastro} id="cadastro">
+                {
+                    !addAtendente ?
+                    <Row justify="center" style={{margin: "1.2rem"}}>
+                        <Avatar
+                            alt={usuario.nome}
+                            src="/static/images/avatar/1.jpg"
+                            sx={{ width: 150, height: 150 }}
+                        />
+                    </Row>: <></>
+                }
+                {usuario.tipo == "restaurante" && !addAtendente ? 
                     (
                         <Row>
                             <Col>
@@ -160,7 +229,7 @@ export const CadastroUsuario = () => {
                                         />
                                     </Col>
                                 </Row>
-                                <Row>
+                                {/* <Row>
                                     <Col>
                                         <TextField
                                             fullWidth
@@ -172,7 +241,7 @@ export const CadastroUsuario = () => {
                                             margin="dense"
                                         />
                                     </Col>
-                                </Row>
+                                </Row> */}
                             </Col>
                         </Row>
                     ) : null
@@ -209,7 +278,7 @@ export const CadastroUsuario = () => {
                                 />
                             </Col>
                         </Row>
-                        <Row>
+                        {/* <Row>
                             <Col>
                                 <TextField
                                     fullWidth
@@ -222,7 +291,7 @@ export const CadastroUsuario = () => {
                                     margin="dense"
                                 />
                             </Col>
-                        </Row>
+                        </Row> */}
                         <Row>
                             <Col>
                                 <TextField
@@ -247,6 +316,84 @@ export const CadastroUsuario = () => {
                                     label="Confirmar senha"
                                     defaultValue=""
                                     onChange={({target}) => setSenhaConfirmada(target.value)}
+                                    type="password"
+                                    size="small"
+                                    margin="dense"
+                                />
+                            </Col>
+                        </Row>
+                        
+                    </>) : null
+                }
+                {addAtendente  && usuario.tipo === "restaurante" ? 
+                    (<>
+                        <Row>
+                            <Col>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="outlined-required"
+                                    label="Nome completo"
+                                    defaultValue={atendente.nome}
+                                    onChange={({target}) => setNomeAtendente(target.value)}
+                                    size="small"
+                                    margin="dense"
+                                />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="outlined-required"
+                                    label="Email"
+                                    defaultValue={atendente.email}
+                                    onChange={({target}) => setEmailAtendente(target.value)}
+                                    type="email"
+                                    size="small"
+                                    margin="dense"
+                                />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="outlined-required"
+                                    label="Funcionário do restaurante (Restaurante ID)"
+                                    defaultValue={usuario.id}
+                                    size="small"
+                                    margin="dense"
+                                    disabled="true"
+                                />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="outlined-required"
+                                    label="Senha"
+                                    defaultValue=""
+                                    onChange={({target}) => setSenhaAtendente(target.value)}
+                                    type="password"
+                                    size="small"
+                                    margin="dense"
+                                />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="outlined-required"
+                                    label="Confirmar senha"
+                                    defaultValue=""
+                                    onChange={({target}) => setSenhaConfirmadaAtendente(target.value)}
                                     type="password"
                                     size="small"
                                     margin="dense"
@@ -335,21 +482,29 @@ export const CadastroUsuario = () => {
                             <Col lg={6} md={6} sm={6}>
                                 <div style={{ textAlign: 'right' }}>
                                     <Button variant="contained" onClick={submeterUsuario}>
-                                        Cadastrar
+                                        Adicionar
                                     </Button>
                                 </div>
                             </Col>
                         </Row>
-                    ):(
+                    ): !addAtendente ?(
                         <Row>
                             <Col>
                                 <div style={{ textAlign: 'right' }}>
-                                    <Button variant="contained">
+                                    <Button variant="contained" onClick={() => atualizaCadastro()}>
                                         Atualizar cadastro 
                                     </Button>
                                 </div>
                             </Col>
                         </Row>
+                    ): (
+                        <Col>
+                            <div style={{ textAlign: 'right' }}>
+                                <Button variant="contained" onClick={() => criarAtendente()}>
+                                    Adicionar atendente!
+                                </Button>
+                            </div>
+                        </Col>
                     )
                 } 
             </form>  

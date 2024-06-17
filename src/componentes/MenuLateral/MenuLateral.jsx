@@ -66,18 +66,25 @@ function MenuLateral({children, itensMenu}) {
       </Toolbar>
       <Divider />
       <List>
-        {itensMenu.map((item, index) => (
-          <ListItem key={index} disablePadding>
-            <Link to={item.link} style={{textDecoration: "none", color: "inherit", width: "100%"}}>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={item.texto} />
-              </ListItemButton>
-            </Link>
-          </ListItem>
-        ))}
+        {
+          usuario.ativo ? itensMenu.map((item, index) => (
+            <ListItem key={index} disablePadding>
+              <Link to={item.link} style={{textDecoration: "none", color: "inherit", width: "100%"}}>
+                <ListItemButton>
+                  <ListItemIcon>
+                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  </ListItemIcon>
+                  <ListItemText primary={item.texto} />
+                </ListItemButton>
+              </Link>
+            </ListItem>
+          )): 
+          <> 
+            <Typography component="body">
+              Não ativo
+            </Typography>
+          </>
+        }
       </List>
     </div>
   );

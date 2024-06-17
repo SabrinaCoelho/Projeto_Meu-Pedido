@@ -1,4 +1,4 @@
-import { createBrowserRouter, useParams } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import { LayoutBase } from "../paginas/LayoutBase";
 import { LayoutBasePerfil } from "../paginas/LayoutBasePerfil";
 import { Inicio } from "../paginas/Inicio/Inicio";
@@ -11,12 +11,12 @@ import { PesquisarRestaurantes } from "../paginas/PesquisaRestaurantes/PesquisaR
 import { ComandaDigital } from "../paginas/ComandaDigital/ComandaDigital";
 import { Cardapio } from "../paginas/Cardapio/Cardapio";
 import { LayoutProviders } from "../paginas/LayoutProviders";
-import { Button } from '@mui/material';
-import MenuLateral from "../componentes/MenuLateral/MenuLateral"
 import Typography from '@mui/material/Typography';
 import ConfigurarFuncionario from "../paginas/ConfigurarFuncionario/ConfigurarFuncionario";
 import { HistoricoAtendimentos } from "../paginas/HistoricoAtendimentos/HistoricoAtendimentos";
 import { PesquisarComandas } from "../paginas/PesquisarComandas/PesquisarComandas"
+import ControlePedidos from "../paginas/ControlePedidos/ControlePedidos";
+import { GerarCodigo } from "../paginas/GerarCodigo/GerarCodigo";
 
 export const router = createBrowserRouter([
     {
@@ -44,12 +44,20 @@ export const router = createBrowserRouter([
                         element: <PesquisarRestaurantes/>
                     },
                     {
+                        path: "pedidos",
+                        element: <ControlePedidos/>
+                    },
+                    {
                         path: "restaurantes/:restauranteId",//TO DO REVISAR
                         element: <PesquisarRestaurantes/>
                     },
                     {
                         path: "comanda-digital",
                         element: <ComandaDigital/>
+                    },
+                    {
+                        path: "gerar-codigo",
+                        element: <GerarCodigo/>
                     },
                     {
                         path: "acesso-comanda-digital",

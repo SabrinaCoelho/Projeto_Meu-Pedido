@@ -11,6 +11,8 @@ export const PesquisarComandas = () => {
     const [carregando, setCarregando] = useState(true)
     const [inputValue, setInputValue] = useState('');
     const [ comandaDaVez, setComandaDaVez ] = useState(null);
+    const usuarioEmail = localStorage.getItem("usuario");
+    const token = localStorage.getItem("token");
     
     //const [restauranteDados, setRestauranteDados] = useState({});
     
@@ -34,12 +36,19 @@ export const PesquisarComandas = () => {
         setTotal
     } = useComandaContext()
 
-    const {pathname} = useLocation();
+    // const {pathname} = useLocation();
 
     //Busca todos as comandas abertas
     useEffect(
         () => {
-            axios.get("http://localhost:3001/api/comandas-abertas/"+usuario.restauranteId, {})
+            console.log(usuario)
+            axios.get("http://localhost:3001/api/comandas-abertas/"+usuario.restauranteId,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            )
                 .then(
                     res => {
                         if(res && res.data){
@@ -49,8 +58,8 @@ export const PesquisarComandas = () => {
                     }
                 )
                 .catch(err => {//TODO
+                    alert(err.response.data.message)
                     setCarregando(false)
-                    console.log("NAO deu certo")
                 }
 
             )
@@ -60,11 +69,15 @@ export const PesquisarComandas = () => {
     useEffect(
         () => {
             if(inputValue){
-                console.log(inputValue)
-                axios.get("http://localhost:3001/api/comandas/"+inputValue, {})
+                axios.get("http://localhost:3001/api/comandas/"+inputValue,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    }
+                )
                     .then(
                         res => {
-                            console.log("OK, CHAOS!")
                             const { comandaId, atendenteNome, atendenteId, cliente, mesa, inicio,termino, restauranteId, pedidos, total, status } = res.data.comanda;
                             setAtendenteId(atendenteId);
                             setAtendenteNome(atendenteNome);

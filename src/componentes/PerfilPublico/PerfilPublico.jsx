@@ -8,29 +8,28 @@ import axios from "axios"
 import { useCadastroUsuarioContext } from "../../contexto/CadastroUsuario"
 
 export const PerfilPublico = ({restauranteDados}) => {
-    console.log(restauranteDados)
+    
     const {comanda, setRestauranteId} = useComandaContext();
     const [carregando, setCarregando] = useState(true)
     const [ restaurante, setRestaurante ] = useState(null);
-    console.log(comanda)
+    
     const { restauranteId } = useParams();
     
     const { usuario } = useCadastroUsuarioContext();
     useEffect(
         () => {
-            console.log(restauranteId)
             if(restauranteId){
                 axios.get("http://localhost:3001/api/restaurantes/"+restauranteId)
                     .then(
                         res => {
-                            console.log("OK, CHAOS!")
-                            console.log(res.data.restaurante)
-                            setRestaurante(res.data.restaurante)
-                            setCarregando(false)
-                            console.log(restaurante)
+                            if(res && res.data){
+                                setRestaurante(res.data.restaurante);
+                                setCarregando(false);
+                            }
                         }
                     )
                     .catch(err => {//TODO
+                        alert(err.response.data.message)
                         setCarregando(false)
                         console.log(err)
                     }
@@ -38,7 +37,6 @@ export const PerfilPublico = ({restauranteDados}) => {
                     )
             }else{
                 setRestaurante(restauranteDados);
-                console.log(restaurante)
                 setCarregando(false);
             }
         }, [restauranteId, carregando, restauranteDados]
@@ -74,7 +72,6 @@ export const PerfilPublico = ({restauranteDados}) => {
             {
                 usuario.id && (!comanda.comandaId || comanda.restauranteId !== restaurante.id) ?(
                     <Button variant="contained" size="small" onClick={() => {
-                        console.log(comanda)
                         setRestauranteId(restaurante.id);
                         navegar("/perfil/iniciar-atendimento")
                     }}>
@@ -82,9 +79,7 @@ export const PerfilPublico = ({restauranteDados}) => {
                     </Button>
                 ): comanda.comandaId && comanda.restauranteId === restaurante.id ?(
                     <Button variant="contained" size="small" onClick={() => {
-                        console.log(comanda)
                         if(usuario.id && comanda.comandaId){
-                            console.log(usuario)
                             navegar("/perfil/comanda-digital") 
                         }else if(!usuario.id && comanda.comandaId){
                             console.log("sem login")
