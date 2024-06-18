@@ -17,6 +17,7 @@ import { HistoricoAtendimentos } from "../paginas/HistoricoAtendimentos/Historic
 import { PesquisarComandas } from "../paginas/PesquisarComandas/PesquisarComandas"
 import ControlePedidos from "../paginas/ControlePedidos/ControlePedidos";
 import { GerarCodigo } from "../paginas/GerarCodigo/GerarCodigo";
+import { ProtectedRoute } from "../componentes/ProtectedRoute/ProtectedRoute";
 
 export const router = createBrowserRouter([
     {
@@ -25,7 +26,7 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: "perfil",
-                element: <LayoutBasePerfil/>,
+                element: <ProtectedRoute allowedTypes={["restaurante", "atendente", "cliente"]}><LayoutBasePerfil/></ProtectedRoute>,
                 children:[
                     {
                         path: "",
@@ -45,7 +46,7 @@ export const router = createBrowserRouter([
                     },
                     {
                         path: "pedidos",
-                        element: <ControlePedidos/>
+                        element: <ProtectedRoute allowedTypes={["restaurante"]}><ControlePedidos/></ProtectedRoute>
                     },
                     {
                         path: "restaurantes/:restauranteId",//TO DO REVISAR
@@ -57,15 +58,15 @@ export const router = createBrowserRouter([
                     },
                     {
                         path: "gerar-codigo",
-                        element: <GerarCodigo/>
+                        element: <ProtectedRoute allowedTypes={["atendente"]}><GerarCodigo/></ProtectedRoute>
                     },
                     {
                         path: "acesso-comanda-digital",
-                        element: <AcessoComandaDigital/>,
+                        element: <ProtectedRoute allowedTypes={["atendente", "cliente"]}><AcessoComandaDigital/></ProtectedRoute>,
                         children:[
                             {
                                 path: "comanda-digital",
-                                element: <ComandaDigital/>
+                                element: <ProtectedRoute allowedTypes={["atendente", "cliente"]}><ComandaDigital/></ProtectedRoute>
                             }
                         ]
                     },
@@ -75,7 +76,7 @@ export const router = createBrowserRouter([
                     },
                     {
                         path: "configurar-funcionarios",
-                        element: <ConfigurarFuncionario/>
+                        element: <ProtectedRoute allowedTypes={["restaurante"]}><ConfigurarFuncionario/></ProtectedRoute>
                     },
                     {
                         path: "historico-atendimentos",
@@ -83,7 +84,11 @@ export const router = createBrowserRouter([
                     },
                     {
                         path: "comandas-em-andamento",
-                        element: <PesquisarComandas/>
+                        element: <ProtectedRoute allowedTypes={["atendente"]}><PesquisarComandas/></ProtectedRoute>
+                    },
+                    {
+                        path:"acesso-negado" ,
+                        element: <Typography>Acesso negado</Typography>
                     },
                 ]
             },
@@ -131,6 +136,15 @@ export const router = createBrowserRouter([
                 ]
             },
             
-        ]
+        ],
+        
+    },
+    {
+        path:"acesso-negado" ,
+        element: <Typography>Acesso negado</Typography>
+    },
+    {
+        path:"*" ,
+        element: <Typography>Xiii</Typography>
     }
 ])

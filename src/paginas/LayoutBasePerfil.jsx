@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import axios from 'axios';
 
 import { useSocketContext } from '../contexto/Socket'; 
+import { useAuth } from '../contexto/Auth';
 
 const SideMenu = styled.div`
     height: 100%;
@@ -45,10 +46,6 @@ export const LayoutBasePerfil = () => {
     pathname = teste[1]
     //console.log(pathname)
     let userId = teste[2]
-
-    const {
-        login
-    } = useLoginContext()
     
     const { 
         usuario,
@@ -66,6 +63,7 @@ export const LayoutBasePerfil = () => {
     
     const usuarioEmail = localStorage.getItem("usuario");
     const token = localStorage.getItem("token");
+    const { setUserType } = useAuth();
 
     useEffect(
         () => {
@@ -132,6 +130,7 @@ export const LayoutBasePerfil = () => {
                             setEndereco(endereco);
                             setInformacoes(informacoes);
                             setAtivo(ativo);
+                            setUserType(tipo);
                             setRestauranteId(restauranteId);
                             // console.log(usuario)
                             // if(tipo === "restaurante"){
@@ -149,7 +148,7 @@ export const LayoutBasePerfil = () => {
                 }
 
             ) 
-        }, [login, userId]
+        }, [userId]
     )
 
     let itens = []

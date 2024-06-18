@@ -4,20 +4,10 @@ import { useComandaContext } from "../../contexto/Comanda";
 import { useLoginContext } from "../../contexto/Login";
 import { useNavigate } from "react-router-dom";
 import { useCadastroUsuarioContext } from "../../contexto/CadastroUsuario";
+import axios from "axios";
 
 export const Atendimento = () => {
 
-    /* const {
-        atendimento,
-        setCliente,
-        setMesa,
-        setComanda
-    } = useAtendimentoContext()
-
-    const entrar = (event) => {
-        event.preventDefault();
-        console.log(atendimento)
-    } */
     const {
         login
     } = useLoginContext();
@@ -52,12 +42,30 @@ export const Atendimento = () => {
         }
         submeterComanda()
     }
-    
+    const pesquisaCodigo = (value) => {
+        setCodigo(value);
+        axios.get("http://localhost:3001/api/mesa-codigo/"+comanda.codigo)
+            .then(
+                res => {
+                    if(res && res.data){
+                        console.log(res)
+                        //setMesa()
+                        //setCardapio(res.data.produtos);
+                    }
+                    //setCarregando(false)
+                }
+            )
+            .catch(err => {//TODO
+                console.log(err)
+                //setCarregando(false)
+            }
+        )
+    }
     return (
         <Container style={{margin: "80px"}}>
             <form onSubmit={iniciar}>
                 <Row justify="center" >
-                    <Col xxxl={4} xxl={4} xl={4} lg={4} md={8} sm={12}>
+                    <Col>
                         <Row>
                             <Col>
                                 {
@@ -79,8 +87,8 @@ export const Atendimento = () => {
                                                 required
                                                 id="outlined-required"
                                                 label="Código"
-                                                onChange={({target}) => setCodigo(target.value)}
-                                                onBlur={({target}) => setCodigo(target.value)}
+                                                onChange={({target}) => pesquisaCodigo(target.value)}
+                                                onBlur={({target}) => pesquisaCodigo(target.value)}
                                                 type="text"
                                                 size="small"
                                                 margin="dense"
@@ -109,9 +117,9 @@ export const Atendimento = () => {
                                                 setAtendenteId(usuario.id)
                                                 setAtendenteNome(usuario.nome)
                                                 setCliente(target.value)
-
+                                                setClienteId(target.value);
                                                 setRestauranteId(usuario.restauranteId)
-                                                console.log(comanda)
+                                                // console.log(comanda)
                                             }}
                                             type="text"
                                             size="small"

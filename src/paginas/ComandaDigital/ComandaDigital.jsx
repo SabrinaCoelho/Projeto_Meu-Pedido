@@ -21,7 +21,8 @@ export const ComandaDigital = () => {
     const {
         comanda,
         setTotal,
-        setTermino
+        setTermino,
+        setPedidos
     } = useComandaContext()
     const { 
         usuario
@@ -35,35 +36,64 @@ export const ComandaDigital = () => {
     }
     useEffect(
         () => {
-            axios.get("http://localhost:3001/api/comandas/"+comanda.comandaId, 
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                }
-            )
-                .then(
-                    res => {
-                        const { comanda } = res.data;
-                        setComandaDaVez(comanda);//TODO
-                        if(usuario.tipo === "cliente"){
-                            /* if(!socket.connected){//TODO melhorar isso aqui
-                                socket.connect();
-                            } */
-                            socket.emit("acessa_comanda", {
-                                comandaId: comanda.comandaId,
-                                usuarioId: usuario.id,
-                                restauranteId: comanda.restauranteId
-                            })
+            if(usuario.id){
+                axios.get("http://localhost:3001/api/comandas/"+comanda.comandaId, 
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
                         }
+                    })
+                    .then(
+                        res => {
+                            const { comanda } = res.data;
+                            setComandaDaVez(comanda);//TODO
+                            if(usuario.tipo === "cliente"){
+                                /* if(!socket.connected){//TODO melhorar isso aqui
+                                    socket.connect();
+                                } */
+                                socket.emit("acessa_comanda", {
+                                    comandaId: comanda.comandaId,
+                                    usuarioId: usuario.id,
+                                    restauranteId: comanda.restauranteId
+                                })
+                            }
+                            setCarregando(false)
+                        }
+                    )
+                    .catch(err => {//TODO
+                        console.log("NAO deu certo")
                         setCarregando(false)
+                    })
+            }else{
+                const {comandaId, codigo} = comanda;
+                axios.post("http://localhost:3001/api/comandas/cliente-sem-cadastro", {comandaId, codigo})
+                    .then(
+                        res => {
+                            if(res && res.data){
+                                if(res && res.data){
+                                    let {comanda} = res.data;
+                                    setComandaDaVez(comanda);
+                                    
+                                    /* console.log(restauranteId)
+                                    console.log({
+                                        comandaId: comandaId,
+                                        usuarioId: usuario.id,
+                                        restauranteId: restauranteId
+                                    }) */
+                                    
+                                    navegar("/comanda-digital")
+                                }
+                            }
+                        }
+                    )
+                    .catch(err => {//TODO
+                        alert(err.response.data.message);
+                        console.log("NAO deu certo")
                     }
+
                 )
-                .catch(err => {//TODO
-                    console.log("NAO deu certo")
-                    setCarregando(false)
-                }
-        )
+            }
+          
         }, [carregando, comanda]
     )
     const cancelaItem = (item) => {
@@ -77,10 +107,10 @@ export const ComandaDigital = () => {
         let totalAtualizadoFormatado = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
         
         axios.put("http://localhost:3001/api/pedidos", {comandaDados: {
-            comandaId: comandaDaVez.comandaId,
-            restauranteId: comandaDaVez.restauranteId,
-            pedidoId: item.id,
-            total: totalAtualizadoFormatado
+                comandaId: comandaDaVez.comandaId,
+                restauranteId: comandaDaVez.restauranteId,
+                pedidoId: item.id,
+                total: totalAtualizadoFormatado
             }},
             )
             .then(
@@ -92,9 +122,11 @@ export const ComandaDigital = () => {
                             pedidoId: item.id
                         })
                         const {comandaAtualizada} = res.data;
+                        
                         setComandaDaVez(comandaAtualizada);
+                        setCarregando(true)
                     }
-                    setCarregando(false)
+                    
                 }
             )
             .catch(err => {//TODO
@@ -125,8 +157,24 @@ export const ComandaDigital = () => {
             setCarregando(false)
         })
     }
+    useEffect(
+        () => {
+            if(!usuario.id){
+                console.log(comanda)
+                setComandaDaVez(comanda);
+                socket.connect();
+                socket.emit("cliente_nao_cadastrado_online", {
+                    query: {
+                        comandaId: comanda.comandaId,
+                        restauranteId: comanda.restauranteId,
+                        usuarioId: comanda.clienteId
+                    }
+                });
+            }
+        },[carregando]
+    );
     return comandaDaVez ? (
-                <Container style={{paddingBottom: "100px"}}>
+                <Container style={{paddingBottom: "100px", marginTop: "20px"}}>
                     <Row justify="between">
                         <Col>
                             <Typography variant="h5" component="h1">
@@ -193,9 +241,15 @@ export const ComandaDigital = () => {
                                                     <div>
                                                         <Typography variant="body" component="body">{item.un} Un.</Typography>
                                                     </div>
-                                                    <div>
-                                                        <Typography variant="body" component="body">Efetuado por {item.atendente}</Typography>
-                                                    </div>
+                                                    {
+                                                        item.atendente ?
+                                                        <div>
+                                                            <Typography variant="body" component="body">Efetuado por {item.atendente}</Typography>
+                                                        </div>
+                                                        :<div>
+                                                            <Typography variant="body" component="body">Autoatendimento</Typography>
+                                                        </div>
+                                                    }
                                                 </Row>
                                             </Container>
                                         </CardContent>

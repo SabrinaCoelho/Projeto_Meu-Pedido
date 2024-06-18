@@ -6,12 +6,13 @@ import { useNavigate } from "react-router-dom"
 import { useCadastroUsuarioContext } from "../../contexto/CadastroUsuario"
 import { useEffect, useState } from "react";
 import { ComandaDigital } from "./ComandaDigital";
+import { useSocketContext } from "../../contexto/Socket";
 
 export const AcessoComandaDigital = () => {
 
     const usuarioEmail = localStorage.getItem("usuario");
     const token = localStorage.getItem("token");
-    
+    const { socket } = useSocketContext();
     const {
         comanda,
         setComandaId,
@@ -113,12 +114,12 @@ export const AcessoComandaDigital = () => {
                         'Authorization': `Bearer ${token}`
                     }
                 }
-            )//TODO NO BACK
+            )
                 .then(
                     res => {
                         console.log("OK, CHAOS!")
                         if(res && res.data){
-                            let { comandaId, atendenteId, atendenteNome, cliente, inicio, mesa, restauranteId, termino, total, pedidos} = res.data.comanda;
+                            let { comandaId, atendenteId, atendenteNome, cliente, inicio, mesa, restauranteId, termino, total, pedidos, status} = res.data.comanda;
                             console.log(res.data.comanda);
                             setComandaId(comandaId)
                             setAtendenteId(atendenteId)
@@ -130,6 +131,7 @@ export const AcessoComandaDigital = () => {
                             setRestauranteId(restauranteId)
                             setTermino(termino)
                             setTotal(total)
+                            setStatus(status)
                             console.log(restauranteId)
                             console.log({
                                 comandaId: comandaId,
@@ -153,8 +155,9 @@ export const AcessoComandaDigital = () => {
                     res => {
                         if(res && res.data){
                             if(res && res.data){
-                                let { comandaId, atendenteId, atendenteNome, cliente, inicio, mesa, restauranteId, termino, total, pedidos} = res.data.comanda;
-                                // console.log(res.data.comanda);
+                                let { comandaId, atendenteId, atendenteNome, cliente, inicio, mesa, restauranteId, termino, total, pedidos, status} = res.data.comanda;
+                                //console.log(res.data.comanda);
+                                console.log(comandaId, atendenteId, atendenteNome, cliente, inicio, mesa, restauranteId, termino, total, pedidos);
                                 setComandaId(comandaId)
                                 setAtendenteId(atendenteId)
                                 setAtendenteNome(atendenteNome)
@@ -165,6 +168,8 @@ export const AcessoComandaDigital = () => {
                                 setRestauranteId(restauranteId)
                                 setTermino(termino)
                                 setTotal(total)
+                                setStatus(status)
+                                console.log(comanda)
                                 /* console.log(restauranteId)
                                 console.log({
                                     comandaId: comandaId,
@@ -178,6 +183,7 @@ export const AcessoComandaDigital = () => {
                     }
                 )
                 .catch(err => {//TODO
+                    alert(err.response.data.message);
                     console.log("NAO deu certo")
                 }
 

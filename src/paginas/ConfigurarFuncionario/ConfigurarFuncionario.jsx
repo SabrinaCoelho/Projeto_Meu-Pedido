@@ -25,7 +25,7 @@ const rows = [
 export default function () {
 
   const usuarioEmail = localStorage.getItem("usuario");
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
     
   const [ funcionarios, setFuncionarios ] = useState(null);
   const [carregando, setCarregando] = useState(true);
@@ -43,21 +43,21 @@ export default function () {
           }
         }
       )
-        .then(
-            res => {
-                if(res.data && res.data){
-                  let {funcionarios} = res.data;
-                  let teste = funcionarios.map(e => e.ativo)
-                  setAtualizaSwitches(teste)
-                  setFuncionarios(funcionarios);
-                  
-                }
-            }
-        )
-        .catch(err => {//TODO
-            console.log(err)
-            setCarregando(false)
-        }) 
+      .then(
+          res => {
+              if(res.data && res.data){
+                let {funcionarios} = res.data;
+                let atualiza = funcionarios.map(e => e.ativo)
+                setAtualizaSwitches(atualiza)
+                setFuncionarios(funcionarios);
+                setCarregando(false);
+              }
+          }
+      )
+      .catch(err => {//TODO
+          console.log(err)
+          setCarregando(false)
+      }) 
     }, [carregando, atendente.submetido]
   );
   const handleSwitchChange = ({target}, funcionario) => {
@@ -73,16 +73,15 @@ export default function () {
       }
     })
       .then(
-          res => {
-            console.log(res)
-            if(res && res.data){
-              setCarregando(true);
-            }
+        res => {
+          console.log(res)
+          if(res && res.data){
+            setCarregando(true);
           }
+        }
       )
       .catch(err => {//TODO
-          console.log(err)
-          setCarregando(false)
+        alert(err.response.data.message);
       }) 
   }
   return (

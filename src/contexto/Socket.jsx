@@ -50,8 +50,11 @@ export const SocketProvider = ({ children }) => {
             socket.on("server_pedido_cancelado", (msg)=> alert(msg));
             socket.on("server_novo_pedido", (msg)=> alert(msg));
             socket.on('server_chama_atendente', (msg)=> alert(msg))
-        }else{
+        }else if(usuario && usuario.tipo === "atendente"){
             socket.on('server_chama_atendente', (msg)=> alert(msg))
+        }else if(!usuario.id){
+            socket.on("server_pedido_cancelado", (msg)=> alert(msg));
+            socket.on('server_comanda_atualizada', (msg)=> alert(msg));
         }
         
         //

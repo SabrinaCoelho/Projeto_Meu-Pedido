@@ -1,18 +1,18 @@
 import { createContext, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './Auth';
+import axios from 'axios';
 
 const LoginInicial = {
     email: '',
-    senha: '',
-    tipo: '1'
+    senha: ''
 }
 
 export const LoginContext = createContext({
-    login: LoginInicial,
+    usuario: LoginInicial,
     erros: {},
     setEmail: () => null,
-    setSenha: () => null,
-    setTipo: () => null
+    setSenha: () => null
 })
 
 export const useLoginContext = () => {
@@ -21,12 +21,12 @@ export const useLoginContext = () => {
 
 export const LoginProvider = ({ children }) => {
 
-    const navegar = useNavigate()
+    const navegar = useNavigate();
+    const { login, setUserType } = useAuth();
 
-    const [login, setLogin] = useState(LoginInicial)
+    const [usuario, setLogin] = useState(LoginInicial)
 
     const setEmail = ({target}) => {
-        console.log(target.value)
         const email = target.value;
         setLogin(estadoAnterior => {
             return {
@@ -36,7 +36,6 @@ export const LoginProvider = ({ children }) => {
         })
     }
     const setSenha = ({target}) => {
-        console.log(target.value)
         const senha = target.value;
         setLogin(estadoAnterior => {
             return {
@@ -45,20 +44,26 @@ export const LoginProvider = ({ children }) => {
             }
         })
     }
-    const setTipo = (tipo) => {
-        setLogin(estadoAnterior => {
-            return {
-                ...estadoAnterior,
-                tipo
-            }
-        })
-    }
-    
 
     const submeterLogin = () => {
-        
-        console.log(login)
-        //navegar('/cadastro/concluido')
+        axios.post("http://localhost:3001/api/aut/login", {usuario})
+            .then(
+                res => {
+                    if(res){
+                        localStorage.setItem("token", res.data.token)
+                        localStorage.setItem("usuario", res.data.usuario.email)
+                        login(res.data.token);
+                        setUserType(res.data.usuario.tipo);
+                        navegar('/perfil')
+                    }
+                }
+            )
+            .catch(err => {
+                console.log(err.response.data.message);
+                alert(err.response.data.message);
+            }
+
+        )
     }
 
     /* const possoSelecionarInteresse = () => {
@@ -66,10 +71,9 @@ export const LoginProvider = ({ children }) => {
     } */
 
     const contexto = {
-        login,
+        usuario,
         setEmail,
         setSenha,
-        setTipo,
         submeterLogin
     }
 

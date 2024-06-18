@@ -79,9 +79,10 @@ export const Cardapio = ({restauranteId}) => {
 
     const [expanded, setExpanded] = useState('panel1');
     const [carregando, setCarregando] = useState(true)
-    const [cardapio, setCardapio] = useState(null)
+    const [cardapio, setCardapio] = useState([])
     const [ pedidos, setPedidos ] = useState([]);
     const [ totalPedidos, setTotalPedidos ] = useState(comanda.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+    const [atualizaCampos, setAtualizaCampos] = useState(null);
     const navegar = useNavigate();
 
     const atualizaProduto = (event) => {
@@ -198,13 +199,12 @@ export const Cardapio = ({restauranteId}) => {
         }
 
         let {comandaId, restauranteId} = comanda;
-        // console.log(pedido)
+        console.log(pedido)
         if(comanda && comandaId && restauranteId){
             axios.post("http://localhost:3001/api/pedidos", {pedido})
                 .then(
                     res => {
                         if(res && res.data){
-                            console.log(res);
                             if(usuario.tipo === "atendente"){
                                 socket.emit('comanda_atualizada', {//Cliente escuta
                                     comandaId: comanda.comandaId,
@@ -220,12 +220,16 @@ export const Cardapio = ({restauranteId}) => {
                                     restauranteId: comanda.restauranteId
                                 });
                             }
-                            navegar("/perfil/comanda-digital");
+                            if(usuario.id){
+                                navegar("/perfil/comanda-digital");
+                            }else{
+                                navegar("/comanda-digital");
+                            }
                         }
                     }
                 )
                 .catch(err => {//TODO
-                    console.log("NAO deu certo")
+                    alert(err.response.data.message)
                 }
 
             )
@@ -260,25 +264,28 @@ export const Cardapio = ({restauranteId}) => {
         setCardapio(cardapio);
     }
     const cancelar = (item) => {
+        let newCardapio = [...cardapio];  // Cria uma cópia do estado atual
+        let newPedidos = [...pedidos];  // Cria uma cópia do estado de pedidos
+
         //encontra o INDICE do objeto
         let encontrado;
-        for(let i = 0; i < pedidos.length; i++){
-            if(pedidos[i]._id === item._id){
+        for(let i = 0; i < newPedidos.length; i++){
+            if(newPedidos[i]._id === item._id){
                 encontrado = i;
-                console.log(cardapio[i])
+                // console.log(cardapio[i])
                 break;
             }
         }
         //remove
-        pedidos.splice(encontrado, 1)
+        newPedidos.splice(encontrado, 1)
         //Pega o valor
         let [,total] = totalPedidos.split(/\s/);
         //Formata
         total = parseFloat(total.replace(/,/, '.'));
-        for(let j = 0; j < cardapio.length; j++){
+        for(let j = 0; j < newCardapio.length; j++){
             //Encontra index do prod a alterar
-            if(cardapio[j]._id === item._id){
-                let produtoSelecionado = cardapio[j];
+            if(newCardapio[j]._id === item._id){
+                let produtoSelecionado = newCardapio[j];
                 produtoSelecionado.selecionado = false;
                 //Fortamata o preco do produto e multiplica pela unidade
                 let [,precoProduto] = produtoSelecionado.preco.split(/\s/);
@@ -292,8 +299,11 @@ export const Cardapio = ({restauranteId}) => {
                 break;
             }
         }
-        setCardapio([...cardapio]);
-        setPedidos([...pedidos])
+        
+        /* setCardapio([...cardapio]);
+        setPedidos([...pedidos]) */
+        setPedidos(newPedidos);
+        setCardapio(newCardapio); 
     }
     const submeter = (event) => {//Cadastro de produtos
         event.preventDefault()
@@ -350,7 +360,7 @@ export const Cardapio = ({restauranteId}) => {
         <AccordionDetails>
             <List>
                 {
-                    cardapio ? cardapio.map(
+                    cardapio.map(
                         (item, i) => 
                             usuario.tipo === "restaurante" && !item.status  && item.categoria === "salgado" ?
                             (<>
@@ -389,7 +399,7 @@ export const Cardapio = ({restauranteId}) => {
                                                                 required
                                                                 id="outlined-required"
                                                                 label="Un"
-                                                                defaultValue={item.un}
+                                                                value={item.un}
                                                                 onChange={({target}) => {
                                                                     for(let j = 0; j < cardapio.length; j++){
                                                                         //Encontra index do prod a alterar
@@ -677,7 +687,7 @@ export const Cardapio = ({restauranteId}) => {
                                     </ListItem>
                                 <Divider/>
                             </>): <></>
-                    ): null
+                    )
                 }
             </List>
         </AccordionDetails>

@@ -10,28 +10,13 @@ export const Login = () => {
     const {
         login,
         setEmail,
-        setSenha
+        setSenha,
+        submeterLogin
     } = useLoginContext()
 
     const entrar = (event) => {
         event.preventDefault();
-
-        axios.post("http://localhost:3001/api/aut/login", {login})
-            .then(
-                res => {
-                    localStorage.setItem("token", res.data.token)
-                    localStorage.setItem("usuario", res.data.usuario.email)
-                    if(res){
-                        navegar('/perfil')
-                    }
-                }
-            )
-            .catch(err => {
-                console.log(err.response.data.message);
-                alert(err.response.data.message);
-            }
-
-        )
+        submeterLogin();
     }
     
     return (
