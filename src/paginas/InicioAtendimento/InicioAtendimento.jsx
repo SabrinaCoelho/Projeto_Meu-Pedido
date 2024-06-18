@@ -5,12 +5,12 @@ import { useLoginContext } from "../../contexto/Login";
 import { useNavigate } from "react-router-dom";
 import { useCadastroUsuarioContext } from "../../contexto/CadastroUsuario";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
 export const Atendimento = () => {
 
-    const {
-        login
-    } = useLoginContext();
+    const [mesaDavez, setMesaDaVez] = useState("")
+    const [codigoDavez, setCodigoDaVez] = useState("")
     const {
         comanda,
         setRestauranteId,
@@ -34,22 +34,23 @@ export const Atendimento = () => {
 
     const iniciar = (event) => {//preciso do id do restaurante
         event.preventDefault();
-        const dataInicio = new Date();
-        setInicio(dataInicio);
+        //const dataInicio = new Date();
+        // setInicio(dataInicio);
         if((!comanda.cliente || !comanda.clienteId) && usuario.tipo === "cliente"){//Se estiver vazio -> cliente que esta iniciando
             setCliente(usuario.email)
             setClienteId(usuario.id)
         }
         submeterComanda()
     }
-    const pesquisaCodigo = (value) => {
-        setCodigo(value);
-        axios.get("http://localhost:3001/api/mesa-codigo/"+comanda.codigo)
+    const pesquisaCodigo = () => {
+        console.log(codigoDavez)
+        axios.get("http://localhost:3001/api/mesa-codigo/"+codigoDavez)
             .then(
                 res => {
                     if(res && res.data){
-                        console.log(res)
-                        //setMesa()
+                        const { mesa } = res.data.codigo;
+                        setMesa(mesa);
+                        setMesaDaVez(mesa)
                         //setCardapio(res.data.produtos);
                     }
                     //setCarregando(false)
@@ -61,6 +62,17 @@ export const Atendimento = () => {
             }
         )
     }
+    useEffect(
+        () => {
+            if(codigoDavez.length === 36){
+                pesquisaCodigo()
+                
+            }else{
+                setMesaDaVez("")
+                setMesa("")
+            }
+        }, [codigoDavez]
+    );
     return (
         <Container style={{margin: "80px"}}>
             <form onSubmit={iniciar}>
@@ -87,8 +99,8 @@ export const Atendimento = () => {
                                                 required
                                                 id="outlined-required"
                                                 label="Código"
-                                                onChange={({target}) => pesquisaCodigo(target.value)}
-                                                onBlur={({target}) => pesquisaCodigo(target.value)}
+                                                onChange={({target}) => setCodigoDaVez(target.value)}
+                                                onBlur={({target}) => setCodigoDaVez(target.value)}
                                                 type="text"
                                                 size="small"
                                                 margin="dense"
@@ -129,41 +141,47 @@ export const Atendimento = () => {
                                 }
                             </Col>
                         </Row>
-                        <Row>
-                            <Col >
-                                <TextField
-                                    fullWidth
-                                    required
-                                    id="outlined-required"
-                                    label="Mesa"
-                                    onChange={({target}) => setMesa(target.value)}
-                                    type="text"
-                                    size="small"
-                                    margin="dense"
-                                />
-                            </Col>
-                        </Row>
-                        {/* <Row>
-                            <Col >
-                                <TextField
-                                    fullWidth
-                                    required
-                                    id="outlined-required"
-                                    label="Comanda"
-                                    onChange={({target}) => setComandaID(target.value)}
-                                    type="text"
-                                    size="small"
-                                    margin="dense"
-                                />
-                            </Col>
-                        </Row> */}
+                        {
+                            usuario.tipo !== "atendente"?
+                            <Row>
+                                <Col >
+                                    <TextField
+                                        fullWidth
+                                        id="outlined-required"
+                                        label="Mesa"
+                                        type="text"
+                                        size="small"
+                                        margin="dense"
+                                        disabled="true"
+                                    />
+                                </Col>
+                            </Row>
+                            :<Row>
+                                <Col >
+                                    <TextField
+                                        fullWidth
+                                        required
+                                        id="outlined-required"
+                                        label="Mesa ate"
+                                        value={comanda.mesa}
+                                        onChange={({target}) => setMesa(target.value)}
+                                        onBlur={({target}) => setMesa(target.value)}
+                                        type="text"
+                                        size="small"
+                                        margin="dense"
+                                    />
+                                </Col>
+                            </Row>
+                        }
                         <Row justify="center">
-                            <Button variant="contained" type="submit" onClick={() => {
-                                //navegar("/perfil/comanda-digital")
-                                console.log(comanda)
-                            }}>
-                                Iniciar
-                            </Button>
+                            {
+                                mesaDavez && codigoDavez.length === 36 || comanda.mesa?
+                                <Button variant="contained" type="submit">
+                                    Iniciar
+                                </Button>
+                                :<></>
+                            }
+                            
                         </Row>
                     </Col>
                 </Row>

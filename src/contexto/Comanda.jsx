@@ -174,7 +174,9 @@ export const ComandaProvider = ({ children }) => {
     const token = localStorage.getItem("token");
 
     const submeterComanda = () => {
+        comanda.inicio = new Date();
         console.log(comanda)
+
         axios.post("http://localhost:3001/api/comandas",
             {comanda},
             {
